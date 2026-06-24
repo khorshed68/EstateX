@@ -35,6 +35,19 @@ class AuthController extends Controller
         ]);
 
         if (empty($users)) {
+            $countResult = DB::select("SELECT COUNT(*) AS cnt FROM users");
+            if (!empty($countResult) && $countResult[0]->cnt == 0) {
+                // Self-healing: automatically re-seed database
+                \Illuminate\Support\Facades\Artisan::call('db:seed');
+                
+                // Retry retrieving user
+                $users = DB::select("SELECT * FROM users WHERE email = :email AND roleId = 1", [
+                    'email' => $request->input('email')
+                ]);
+            }
+        }
+
+        if (empty($users)) {
             return back()->withErrors(['email' => 'Invalid administrative credentials.'])->withInput();
         }
 

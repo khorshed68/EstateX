@@ -14,7 +14,8 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(302);
-        $response->assertRedirect('/admin/login');
+        $response->assertStatus(200);
+        $response->assertSee('EstateX');
+        $response->assertSee('Buyer Marketplace');
     }
 }

@@ -21,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (class_exists(\Illuminate\Foundation\Console\ServeCommand::class)) {
+            \Illuminate\Foundation\Console\ServeCommand::$passthroughVariables[] = 'USE_ZEND_ALLOC';
+        }
+
         $this->app['db']->extend('oracle', function ($config, $name) {
             $host = $config['host'] ?? '127.0.0.1';
             $port = $config['port'] ?? '1521';
@@ -42,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $pdo = new PDO($dsn, $username, $password, $options);
+            
+            $config['name'] = $name;
             
             return new \App\Database\OracleConnection($pdo, $dbname, $config['prefix'] ?? '', $config);
         });

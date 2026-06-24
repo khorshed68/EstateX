@@ -2,9 +2,9 @@
 
 namespace App\Database;
 
-use Illuminate\Database\Connection;
+use Yajra\Oci8\Oci8Connection;
 
-class OracleConnection extends Connection
+class OracleConnection extends Oci8Connection
 {
     /**
      * Run a select statement against the database.
@@ -48,6 +48,12 @@ class OracleConnection extends Connection
         foreach ($results as $row) {
             if (is_object($row)) {
                 foreach (get_object_vars($row) as $key => $val) {
+                    // Read stream resources (like CLOBs) into strings for Blade compatibility
+                    if (is_resource($val)) {
+                        $val = stream_get_contents($val);
+                        $row->$key = $val;
+                    }
+
                     $lowerKey = strtolower($key);
                     
                     // Map uppercase or mixed-case properties to lowercase
@@ -72,3 +78,4 @@ class OracleConnection extends Connection
         return $results;
     }
 }
+

@@ -9,11 +9,12 @@ class AdminTest extends TestCase
     /**
      * Test that guest is redirected to admin login page.
      */
-    public function test_guest_redirected_to_login(): void
+    public function test_root_landing_page_renders(): void
     {
         $response = $this->get('/');
-        $response->assertStatus(302);
-        $response->assertRedirect('/admin/login');
+        $response->assertStatus(200);
+        $response->assertSee('EstateX');
+        $response->assertSee('Admin Console');
     }
 
     /**

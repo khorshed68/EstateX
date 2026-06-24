@@ -1,5 +1,9 @@
 <?php
 
+putenv('USE_ZEND_ALLOC=0');
+$_ENV['USE_ZEND_ALLOC'] = '0';
+$_SERVER['USE_ZEND_ALLOC'] = '0';
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
