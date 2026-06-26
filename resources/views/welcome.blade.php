@@ -25,8 +25,9 @@
         body {
             background-color: #030712;
             background-image: 
-                radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.1) 0, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.12) 0, transparent 50%);
+                radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.08) 0, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.08) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.1) 0, transparent 50%);
         }
         .glass-panel {
             background: rgba(15, 23, 42, 0.6);
@@ -35,7 +36,7 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
         .glowing-hero {
-            text-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+            text-shadow: 0 0 40px rgba(245, 158, 11, 0.2);
         }
     </style>
 </head>
@@ -44,99 +45,122 @@
     <!-- Top Navigation / Connection Status -->
     <header class="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-emerald-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg font-outfit shadow-lg shadow-emerald-500/20">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-lg font-outfit shadow-lg shadow-amber-500/20">
                 EX
             </div>
-            <span class="font-outfit font-extrabold text-xl tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-white bg-clip-text text-transparent">EstateX</span>
+            <span class="font-outfit font-extrabold text-xl tracking-tight bg-gradient-to-r from-amber-400 via-orange-200 to-white bg-clip-text text-transparent">EstateX</span>
         </div>
         <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-full px-4 py-1.5 text-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
             <span class="text-slate-400 font-medium">Oracle Live Connection</span>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="w-full max-w-4xl mx-auto px-6 py-12 flex flex-col items-center justify-center my-auto">
+    <main class="w-full max-w-6xl mx-auto px-6 py-12 flex flex-col items-center justify-center my-auto">
         
         <!-- Hero Introduction -->
         <div class="text-center mb-12 max-w-2xl">
             <h1 class="font-outfit font-black text-4xl md:text-5xl text-white tracking-tight leading-tight mb-4">
                 Premium Real Estate <br>
-                <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-500 bg-clip-text text-transparent glowing-hero">Database Platform</span>
+                <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-blue-500 bg-clip-text text-transparent glowing-hero">Database Platform</span>
             </h1>
             <p class="text-slate-400 text-sm md:text-base leading-relaxed">
-                Connect, browse, and secure high-value real estate. Select a portal below to sign in or create an account to start your journey.
+                Choose your portal below to sign in or create an account. All platforms leverage raw SQL queries communicating with Oracle.
             </p>
         </div>
 
         <!-- Portal Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
             
             <!-- Buyer Portal Card -->
-            <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between hover:border-emerald-500/30 transition duration-300 group">
+            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between hover:border-emerald-500/30 transition duration-300 group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-105 transition duration-300">
-                        <i class="fa-solid fa-house-chimney text-xl"></i>
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-house-chimney text-lg"></i>
                     </div>
-                    <h3 class="font-outfit font-bold text-2xl text-slate-100 mb-3">Buyer Marketplace</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                    <h3 class="font-outfit font-bold text-xl text-slate-100 mb-2">Buyer Marketplace</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed mb-6">
                         Browse verified properties, save listings to your wishlist, schedule guided site visits, and reserve units with active transaction logs.
                     </p>
-                    <ul class="space-y-2 mb-8">
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
+                    <ul class="space-y-2 mb-8 text-[11px]">
+                        <li class="flex items-center gap-2 text-slate-300">
                             <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                            <span>Browse with custom pricing & area filters</span>
+                            <span>Browse with custom pricing filters</span>
                         </li>
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
+                        <li class="flex items-center gap-2 text-slate-300">
                             <i class="fa-solid fa-circle-check text-emerald-500"></i>
                             <span>Book visits & make reservation deposits</span>
                         </li>
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
-                            <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                            <span>Submit property & agent reviews</span>
-                        </li>
                     </ul>
                 </div>
-                <div class="space-y-3">
-                    <a href="{{ route('buyer.login') }}" class="w-full block py-3 text-center bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold tracking-wide rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 transition duration-200">
+                <div class="space-y-2.5">
+                    <a href="{{ route('buyer.login') }}" class="w-full block py-2.5 text-center bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold tracking-wide rounded-xl shadow-lg shadow-emerald-500/10 transition duration-200">
                         Sign In as Buyer
                     </a>
-                    <a href="{{ route('buyer.register') }}" class="w-full block py-3 text-center bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold tracking-wide rounded-xl transition duration-200">
+                    <a href="{{ route('buyer.register') }}" class="w-full block py-2.5 text-center bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold tracking-wide rounded-xl transition duration-200">
                         Register New Account
                     </a>
                 </div>
             </div>
 
-            <!-- Administrative Console Card -->
-            <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between hover:border-blue-500/30 transition duration-300 group">
+            <!-- Property Owner Card -->
+            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between hover:border-amber-500/30 transition duration-300 group">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-105 transition duration-300">
-                        <i class="fa-solid fa-user-shield text-xl"></i>
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-house-laptop text-lg"></i>
                     </div>
-                    <h3 class="font-outfit font-bold text-2xl text-slate-100 mb-3">Admin Console</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                    <h3 class="font-outfit font-bold text-xl text-slate-100 mb-2">Owner Workspace</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed mb-6">
+                        List residential or commercial spaces, manage photo galleries, delegate listing representations to agents, and review buyer bookings.
+                    </p>
+                    <ul class="space-y-2 mb-8 text-[11px]">
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-circle-check text-amber-500"></i>
+                            <span>Publish listings & upload media files</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-circle-check text-amber-500"></i>
+                            <span>Approve visits & delegate representation</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="space-y-2.5">
+                    <a href="{{ route('owner.login') }}" class="w-full block py-2.5 text-center bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-bold tracking-wide rounded-xl shadow-lg shadow-amber-500/10 transition duration-200">
+                        Sign In as Owner
+                    </a>
+                    <a href="{{ route('owner.register') }}" class="w-full block py-2.5 text-center bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold tracking-wide rounded-xl transition duration-200">
+                        Register Owner Account
+                    </a>
+                </div>
+            </div>
+
+            <!-- Administrative Console Card -->
+            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between hover:border-blue-500/30 transition duration-300 group">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-user-shield text-lg"></i>
+                    </div>
+                    <h3 class="font-outfit font-bold text-xl text-slate-100 mb-2">Admin Console</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed mb-6">
                         Access system-wide tools to manage directories, moderate property listings, review agent performance leaderboards, and audit platform transaction history.
                     </p>
-                    <ul class="space-y-2 mb-8">
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
+                    <ul class="space-y-2 mb-8 text-[11px]">
+                        <li class="flex items-center gap-2 text-slate-300">
                             <i class="fa-solid fa-circle-check text-blue-500"></i>
                             <span>Suspend/activate platform users</span>
                         </li>
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
+                        <li class="flex items-center gap-2 text-slate-300">
                             <i class="fa-solid fa-circle-check text-blue-500"></i>
-                            <span>Moderate & delete property catalog listings</span>
-                        </li>
-                        <li class="flex items-center gap-2 text-xs text-slate-300">
-                            <i class="fa-solid fa-circle-check text-blue-500"></i>
-                            <span>Audit daily performance & system metrics</span>
+                            <span>Moderate & delete property listings</span>
                         </li>
                     </ul>
                 </div>
                 <div>
-                    <a href="{{ route('admin.login') }}" class="w-full block py-3 text-center bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 text-white text-xs font-bold tracking-wide rounded-xl shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 transition duration-200">
+                    <a href="{{ route('admin.login') }}" class="w-full block py-2.5 text-center bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-500 hover:to-indigo-400 text-white text-xs font-bold tracking-wide rounded-xl shadow-lg shadow-blue-500/10 transition duration-200">
                         Access Admin Panel
                     </a>
-                    <div class="text-[10px] text-slate-500 text-center mt-4">
+                    <div class="text-[9px] text-slate-500 text-center mt-4">
                         Authorized staff only. Session audits are logged.
                     </div>
                 </div>

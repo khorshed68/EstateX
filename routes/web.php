@@ -55,3 +55,32 @@ Route::middleware(['buyer'])->prefix('buyer')->group(function () {
     Route::post('/reviews/property', [\App\Http\Controllers\BuyerReviewController::class, 'storeProperty'])->name('buyer.reviews.property');
     Route::post('/reviews/agent', [\App\Http\Controllers\BuyerReviewController::class, 'storeAgent'])->name('buyer.reviews.agent');
 });
+
+// Owner Auth Routes
+Route::get('/owner/login', [\App\Http\Controllers\OwnerAuthController::class, 'showLogin'])->name('owner.login');
+Route::post('/owner/login', [\App\Http\Controllers\OwnerAuthController::class, 'processLogin'])->name('owner.login.submit');
+Route::get('/owner/register', [\App\Http\Controllers\OwnerAuthController::class, 'showRegister'])->name('owner.register');
+Route::post('/owner/register', [\App\Http\Controllers\OwnerAuthController::class, 'processRegister'])->name('owner.register.submit');
+Route::get('/owner/logout', [\App\Http\Controllers\OwnerAuthController::class, 'logout'])->name('owner.logout');
+
+// Owner Panel Routes (Protected by Session Middleware)
+Route::middleware(['owner'])->prefix('owner')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\OwnerDashboardController::class, 'index'])->name('owner.dashboard');
+
+    // Property Management (CRUD)
+    Route::get('/properties/create', [\App\Http\Controllers\OwnerPropertyController::class, 'create'])->name('owner.properties.create');
+    Route::post('/properties/store', [\App\Http\Controllers\OwnerPropertyController::class, 'store'])->name('owner.properties.store');
+    Route::get('/properties/{id}/edit', [\App\Http\Controllers\OwnerPropertyController::class, 'edit'])->name('owner.properties.edit');
+    Route::post('/properties/{id}/update', [\App\Http\Controllers\OwnerPropertyController::class, 'update'])->name('owner.properties.update');
+    Route::delete('/properties/{id}/delete', [\App\Http\Controllers\OwnerPropertyController::class, 'destroy'])->name('owner.properties.delete');
+
+    // Bookings / Visit Management
+    Route::get('/bookings', [\App\Http\Controllers\OwnerBookingController::class, 'index'])->name('owner.bookings');
+    Route::post('/bookings/{id}/approve', [\App\Http\Controllers\OwnerBookingController::class, 'approve'])->name('owner.bookings.approve');
+    Route::post('/bookings/{id}/reject', [\App\Http\Controllers\OwnerBookingController::class, 'reject'])->name('owner.bookings.reject');
+    Route::post('/bookings/{id}/complete', [\App\Http\Controllers\OwnerBookingController::class, 'complete'])->name('owner.bookings.complete');
+
+    // Agent Management
+    Route::get('/agents', [\App\Http\Controllers\OwnerAgentController::class, 'index'])->name('owner.agents');
+    Route::post('/properties/{propertyId}/assign-agent', [\App\Http\Controllers\OwnerAgentController::class, 'assign'])->name('owner.properties.assign-agent');
+});
