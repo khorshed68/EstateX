@@ -91,6 +91,15 @@
                                                 </button>
                                             </form>
                                         @endif
+
+                                        <!-- Delete Action Form -->
+                                        <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete user {{ $user->fullname }}? All listings, wishlist items, bookings, and profile details will be removed.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-3 py-1.5 bg-red-600/10 hover:bg-red-600/20 border border-red-600/20 hover:border-red-600/40 rounded-lg text-red-400 hover:text-red-300 font-bold transition duration-200">
+                                                <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                                            </button>
+                                        </form>
                                     </div>
                                 @endif
                             </td>

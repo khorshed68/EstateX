@@ -24,10 +24,26 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users');
     Route::post('/users/suspend/{id}', [AdminUserController::class, 'suspend'])->name('admin.users.suspend');
     Route::post('/users/activate/{id}', [AdminUserController::class, 'activate'])->name('admin.users.activate');
+    Route::delete('/users/delete/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.delete');
+
+    // Agent Management
+    Route::get('/agents', [AdminUserController::class, 'agentsIndex'])->name('admin.agents');
+    Route::post('/agents/{id}/update', [AdminUserController::class, 'agentUpdate'])->name('admin.agents.update');
     
     // Property Listings
     Route::get('/properties', [AdminPropertyController::class, 'index'])->name('admin.properties');
     Route::delete('/properties/delete/{id}', [AdminPropertyController::class, 'destroy'])->name('admin.properties.delete');
+
+    // Bookings & Visits log
+    Route::get('/bookings', [AdminDashboardController::class, 'bookings'])->name('admin.bookings');
+    Route::post('/bookings/{id}/action', [AdminDashboardController::class, 'bookingAction'])->name('admin.bookings.action');
+    Route::delete('/bookings/{id}/delete', [AdminDashboardController::class, 'bookingDelete'])->name('admin.bookings.delete');
+
+    // Transaction Ledger
+    Route::get('/transactions', [AdminDashboardController::class, 'transactions'])->name('admin.transactions');
+
+    // System Audit Logs
+    Route::get('/audit-logs', [AdminDashboardController::class, 'auditLogs'])->name('admin.audit-logs');
 });
 
 // Buyer Auth Routes

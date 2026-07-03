@@ -70,9 +70,25 @@
                     <i class="fa-solid fa-users text-lg w-5"></i>
                     <span class="font-medium text-sm">User Management</span>
                 </a>
+                <a href="{{ route('admin.agents') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('admin.agents') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-user-tie text-lg w-5"></i>
+                    <span class="font-medium text-sm">Agent Management</span>
+                </a>
                 <a href="{{ route('admin.properties') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('admin.properties') ? 'sidebar-link-active' : '' }}">
                     <i class="fa-solid fa-house-chimney text-lg w-5"></i>
                     <span class="font-medium text-sm">Property Listings</span>
+                </a>
+                <a href="{{ route('admin.bookings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('admin.bookings') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-calendar-check text-lg w-5"></i>
+                    <span class="font-medium text-sm">Bookings & Visits</span>
+                </a>
+                <a href="{{ route('admin.transactions') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('admin.transactions') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-receipt text-lg w-5"></i>
+                    <span class="font-medium text-sm">Transaction Ledger</span>
+                </a>
+                <a href="{{ route('admin.audit-logs') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('admin.audit-logs') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-file-shield text-lg w-5"></i>
+                    <span class="font-medium text-sm">System Audit Logs</span>
                 </a>
             </nav>
         </div>
