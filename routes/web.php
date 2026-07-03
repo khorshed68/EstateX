@@ -84,3 +84,30 @@ Route::middleware(['owner'])->prefix('owner')->group(function () {
     Route::get('/agents', [\App\Http\Controllers\OwnerAgentController::class, 'index'])->name('owner.agents');
     Route::post('/properties/{propertyId}/assign-agent', [\App\Http\Controllers\OwnerAgentController::class, 'assign'])->name('owner.properties.assign-agent');
 });
+
+// Agent Auth Routes
+Route::get('/agent/login', [\App\Http\Controllers\AgentAuthController::class, 'showLogin'])->name('agent.login');
+Route::post('/agent/login', [\App\Http\Controllers\AgentAuthController::class, 'processLogin'])->name('agent.login.submit');
+Route::get('/agent/register', [\App\Http\Controllers\AgentAuthController::class, 'showRegister'])->name('agent.register');
+Route::post('/agent/register', [\App\Http\Controllers\AgentAuthController::class, 'processRegister'])->name('agent.register.submit');
+Route::get('/agent/logout', [\App\Http\Controllers\AgentAuthController::class, 'logout'])->name('agent.logout');
+
+// Agent Panel Routes (Protected by Session Middleware)
+Route::middleware(['agent'])->prefix('agent')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\AgentDashboardController::class, 'index'])->name('agent.dashboard');
+    Route::get('/properties', [\App\Http\Controllers\AgentPropertyController::class, 'index'])->name('agent.properties');
+    
+    // Bookings / Visit Management
+    Route::get('/bookings', [\App\Http\Controllers\AgentBookingController::class, 'index'])->name('agent.bookings');
+    Route::post('/bookings/{id}/approve', [\App\Http\Controllers\AgentBookingController::class, 'approve'])->name('agent.bookings.approve');
+    Route::post('/bookings/{id}/reject', [\App\Http\Controllers\AgentBookingController::class, 'reject'])->name('agent.bookings.reject');
+    Route::post('/bookings/{id}/complete', [\App\Http\Controllers\AgentBookingController::class, 'complete'])->name('agent.bookings.complete');
+
+    // Reviews
+    Route::get('/reviews', [\App\Http\Controllers\AgentDashboardController::class, 'reviews'])->name('agent.reviews');
+
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\AgentProfileController::class, 'index'])->name('agent.profile');
+    Route::post('/profile/update', [\App\Http\Controllers\AgentProfileController::class, 'update'])->name('agent.profile.update');
+});
+

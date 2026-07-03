@@ -71,7 +71,7 @@
         </div>
 
         <!-- Portal Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             
             <!-- Buyer Portal Card -->
             <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between hover:border-emerald-500/30 transition duration-300 group">
@@ -131,6 +131,37 @@
                     </a>
                     <a href="{{ route('owner.register') }}" class="w-full block py-2.5 text-center bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold tracking-wide rounded-xl transition duration-200">
                         Register Owner Account
+                    </a>
+                </div>
+            </div>
+
+            <!-- Real Estate Agent Card -->
+            <div class="glass-panel p-6 rounded-3xl flex flex-col justify-between hover:border-purple-500/30 transition duration-300 group">
+                <div>
+                    <div class="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-user-tie text-lg"></i>
+                    </div>
+                    <h3 class="font-outfit font-bold text-xl text-slate-100 mb-2">Agent Workspace</h3>
+                    <p class="text-[11px] text-slate-400 leading-relaxed mb-6">
+                        Manage assigned property delegations, approve buyer visit requests, record site tours, and review client satisfaction feedback.
+                    </p>
+                    <ul class="space-y-2 mb-8 text-[11px]">
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-circle-check text-purple-500"></i>
+                            <span>View assigned listings representing owners</span>
+                        </li>
+                        <li class="flex items-center gap-2 text-slate-300">
+                            <i class="fa-solid fa-circle-check text-purple-500"></i>
+                            <span>Manage visitor bookings & calendar leads</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="space-y-2.5">
+                    <a href="{{ route('agent.login') }}" class="w-full block py-2.5 text-center bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-bold tracking-wide rounded-xl shadow-lg shadow-purple-500/10 transition duration-200 text-xs">
+                        Sign In as Agent
+                    </a>
+                    <a href="{{ route('agent.register') }}" class="w-full block py-2.5 text-center bg-slate-900/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold tracking-wide rounded-xl transition duration-200">
+                        Register Agent Account
                     </a>
                 </div>
             </div>
