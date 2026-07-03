@@ -251,6 +251,36 @@
                 </form>
             </div>
 
+            <!-- Compare Listing Card -->
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <div>
+                    <h3 class="font-outfit font-bold text-xs text-slate-100 uppercase tracking-wider">Compare Listings</h3>
+                    <p class="text-[11px] text-slate-500 mt-1">Select another property to compare side-by-side with this one.</p>
+                </div>
+                
+                <form action="{{ route('buyer.comparisons.add') }}" method="POST" class="space-y-3">
+                    @csrf
+                    <input type="hidden" name="property_id_1" value="{{ $property->id }}">
+                    
+                    <div>
+                        <select name="property_id_2" required
+                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                            <option value="">-- Choose Property --</option>
+                            @foreach($comparisonProperties as $compProp)
+                                <option value="{{ $compProp->id }}">
+                                    {{ $compProp->title }} (৳{{ number_format($compProp->price) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full py-2.5 bg-slate-950 border border-slate-805 hover:border-emerald-500 hover:bg-slate-900 text-slate-300 hover:text-emerald-400 text-xs font-bold rounded-xl transition duration-200">
+                        <i class="fa-solid fa-code-compare mr-1"></i> Start Comparison
+                    </button>
+                </form>
+            </div>
+
             <!-- Agent representation profile card -->
             @if($property->agent_name)
                 <div class="glass-panel p-6 rounded-3xl space-y-4">

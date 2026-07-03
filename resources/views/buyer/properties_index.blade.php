@@ -10,14 +10,14 @@
         <form action="{{ route('buyer.dashboard') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             
             <!-- Search Title -->
-            <div class="md:col-span-4">
+            <div class="md:col-span-3">
                 <label for="search" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Search Listings</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </span>
-                    <input type="text" id="search" name="search" value="{{ $search }}" placeholder="Search by title, features..." 
-                           class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 pl-9 pr-4 text-xs text-slate-200 placeholder-slate-655 focus:outline-none focus:border-emerald-500 transition duration-200">
+                    <input type="text" id="search" name="search" value="{{ $search }}" placeholder="Search listings..." 
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 pl-9 pr-4 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 transition duration-200">
                 </div>
             </div>
 
@@ -50,16 +50,29 @@
             </div>
 
             <!-- Price Range -->
-            <div class="md:col-span-2">
-                <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Min Price (৳)</label>
+            <div class="md:col-span-1.5 md:col-span-1">
+                <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Min Price</label>
                 <input type="number" name="min_price" value="{{ $minPrice }}" placeholder="Min" 
                        class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
             </div>
 
-            <div class="md:col-span-2">
-                <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Max Price (৳)</label>
+            <div class="md:col-span-1.5 md:col-span-1">
+                <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Max Price</label>
                 <input type="number" name="max_price" value="{{ $maxPrice }}" placeholder="Max" 
                        class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
+            </div>
+
+            <!-- Sort Option -->
+            <div class="md:col-span-3">
+                <label for="sort" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Sort Listings</label>
+                <select id="sort" name="sort" onchange="this.form.submit()" 
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                    <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest Added</option>
+                    <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                    <option value="size_asc" {{ $sort === 'size_asc' ? 'selected' : '' }}>Area: Small to Large</option>
+                    <option value="size_desc" {{ $sort === 'size_desc' ? 'selected' : '' }}>Area: Large to Small</option>
+                </select>
             </div>
 
             <!-- Action Buttons -->

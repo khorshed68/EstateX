@@ -131,6 +131,9 @@ class OwnerTest extends TestCase
         // Verify inserted into DB
         $property = DB::select("SELECT id FROM properties WHERE title = 'Test Automated Listing'");
         $this->assertNotEmpty($property);
+
+        // Clean up
+        DB::delete("DELETE FROM properties WHERE title = 'Test Automated Listing'");
     }
 
     /**
@@ -138,10 +141,8 @@ class OwnerTest extends TestCase
      */
     public function test_owner_can_update_property_listing(): void
     {
-        // First create or find a property
-        $prop = DB::select("SELECT id FROM properties WHERE ownerId = 4 AND ROWNUM = 1");
-        $this->assertNotEmpty($prop);
-        $propId = $prop[0]->id;
+        // Target property 1 specifically
+        $propId = 1;
 
         $response = $this->withSession([
             'owner_user_id' => 4,
@@ -176,7 +177,17 @@ class OwnerTest extends TestCase
         DB::update("
             UPDATE properties SET 
                 title = 'Luxury 3BHK Apartment near KUET',
-                price = 12000000
+                propDescription = 'Beautiful and spacious 3BHK flat located inside the serene campus region of KUET. Highly suitable for families, students, or lecturers.',
+                price = 12000000,
+                areaSize = 1600,
+                bedrooms = 3,
+                bathrooms = 3,
+                furnishedStatus = 'furnished',
+                parking = 1,
+                balcony = 2,
+                lift = 1,
+                swimmingPool = 0,
+                petFriendly = 1
             WHERE id = :id
         ", ['id' => $propId]);
     }

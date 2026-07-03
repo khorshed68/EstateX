@@ -70,6 +70,11 @@ Route::middleware(['buyer'])->prefix('buyer')->group(function () {
     // Reviews
     Route::post('/reviews/property', [\App\Http\Controllers\BuyerReviewController::class, 'storeProperty'])->name('buyer.reviews.property');
     Route::post('/reviews/agent', [\App\Http\Controllers\BuyerReviewController::class, 'storeAgent'])->name('buyer.reviews.agent');
+
+    // Comparisons
+    Route::get('/comparisons', [\App\Http\Controllers\BuyerDashboardController::class, 'comparisons'])->name('buyer.comparisons');
+    Route::post('/comparisons/add', [\App\Http\Controllers\BuyerDashboardController::class, 'addComparison'])->name('buyer.comparisons.add');
+    Route::delete('/comparisons/remove/{id}', [\App\Http\Controllers\BuyerDashboardController::class, 'removeComparison'])->name('buyer.comparisons.remove');
 });
 
 // Owner Auth Routes

@@ -70,6 +70,10 @@
                     <i class="fa-solid fa-heart text-lg w-5"></i>
                     <span class="font-medium text-sm">My Wishlist</span>
                 </a>
+                <a href="{{ route('buyer.comparisons') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('buyer.comparisons') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-code-compare text-lg w-5"></i>
+                    <span class="font-medium text-sm">Compare Listings</span>
+                </a>
                 <a href="{{ route('buyer.bookings') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('buyer.bookings') ? 'sidebar-link-active' : '' }}">
                     <i class="fa-solid fa-calendar-check text-lg w-5"></i>
                     <span class="font-medium text-sm">My Bookings</span>

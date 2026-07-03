@@ -237,4 +237,75 @@ class BuyerTest extends TestCase
         $this->assertNotEmpty($user);
         $this->assertEquals(3, $user[0]->roleid); // Should have buyer roleId = 3
     }
+
+    /**
+     * Test buyer dashboard sorting by price.
+     */
+    public function test_buyer_dashboard_sorting(): void
+    {
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->get('/buyer/dashboard?sort=price_asc');
+
+        $response->assertStatus(200);
+        $response->assertSee('Real Estate Marketplace');
+        
+        $properties = $response->viewData('properties');
+        $this->assertNotEmpty($properties);
+        
+        // Assert that prices are in ascending order
+        for ($i = 0; $i < count($properties) - 1; $i++) {
+            $this->assertTrue($properties[$i]->price <= $properties[$i+1]->price);
+        }
+    }
+
+    /**
+     * Test property comparison flow.
+     */
+    public function test_buyer_comparison_system(): void
+    {
+        // Clean database first
+        DB::delete("DELETE FROM comparisons WHERE userId = 4");
+
+        // 1. Add comparison
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->post('/buyer/comparisons/add', [
+            'property_id_1' => 1,
+            'property_id_2' => 2
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/buyer/comparisons');
+
+        // Verify comparison pair in database
+        $comp = DB::select("SELECT id FROM comparisons WHERE userId = 4 AND propertyId1 = 1 AND propertyId2 = 2");
+        $this->assertNotEmpty($comp);
+        $compId = $comp[0]->id;
+
+        // 2. View comparisons page
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->get('/buyer/comparisons');
+
+        $response->assertStatus(200);
+        $response->assertSee('Listing Comparisons');
+        $response->assertSee('Luxury 3BHK Apartment');
+        $response->assertSee('Modern Duplex Villa in Sonadanga');
+
+        // 3. Remove comparison
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->delete("/buyer/comparisons/remove/{$compId}");
+
+        $response->assertStatus(302);
+        
+        // Verify deleted from database
+        $compDeleted = DB::select("SELECT id FROM comparisons WHERE id = :id", ['id' => $compId]);
+        $this->assertEmpty($compDeleted);
+    }
 }

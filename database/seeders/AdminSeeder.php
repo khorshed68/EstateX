@@ -65,6 +65,11 @@ class AdminSeeder extends Seeder
         DB::insert("INSERT INTO properties (id, ownerId, agentId, typeId, locationId, title, propDescription, price, areaSize, bedrooms, bathrooms, furnishedStatus, parking, balcony, swimmingPool, status) VALUES (2, 4, 2, 2, 3, 'Modern Duplex Villa in Sonadanga', 'High-end smart duplex villa featuring private pool, automated security, pet-friendly layout, and wide garden yard.', 35000000, 3200, 4, 5, 'semi-furnished', 2, 3, 1, 'available')");
         DB::insert("INSERT INTO properties (id, ownerId, agentId, typeId, locationId, title, propDescription, price, areaSize, status) VALUES (3, 5, 1, 3, 2, 'Commercial Office Space KDA Avenue', 'Premium quality commercial office space, fully air-conditioned, high-speed elevator access, 24/7 power backup.', 45000000, 2500, 'available')");
 
+        // 7.5 Seed Property Images
+        DB::insert("INSERT INTO property_images (id, propertyId, imagePath, isMain, displayOrder) VALUES (1, 1, '/images/properties/luxury_apartment.png', 1, 1)");
+        DB::insert("INSERT INTO property_images (id, propertyId, imagePath, isMain, displayOrder) VALUES (2, 2, '/images/properties/luxury_villa.png', 1, 1)");
+        DB::insert("INSERT INTO property_images (id, propertyId, imagePath, isMain, displayOrder) VALUES (3, 3, '/images/properties/commercial_office.png', 1, 1)");
+
         // 8. Seed Bookings
         DB::insert("INSERT INTO bookings (id, userId, propertyId, agentId, bookingType, status, totalAmount) VALUES (1, 5, 1, 1, 'visit', 'completed', 0)");
         DB::insert("INSERT INTO bookings (id, userId, propertyId, agentId, bookingType, status, totalAmount) VALUES (2, 4, 3, 1, 'reservation', 'completed', 500000)");
