@@ -91,9 +91,13 @@
         <!-- User Profile Footer -->
         <div class="p-4 border-t border-slate-900 bg-slate-950/40">
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-white shadow-inner">
-                    {{ substr(session('agent_user_name', 'Agent'), 0, 1) }}
-                </div>
+                @if(session('agent_user_image'))
+                    <img src="{{ session('agent_user_image') }}" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-inner border border-purple-500/20">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-white shadow-inner">
+                        {{ substr(session('agent_user_name', 'Agent'), 0, 1) }}
+                    </div>
+                @endif
                 <div>
                     <h4 class="text-sm font-semibold text-slate-200">{{ session('agent_user_name', 'Real Estate Agent') }}</h4>
                     <span class="text-xs text-purple-400 font-medium">Licensed Agent</span>

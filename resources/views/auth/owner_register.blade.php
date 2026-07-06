@@ -60,7 +60,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('owner.register.submit') }}" method="POST" class="space-y-4">
+            <form action="{{ route('owner.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 
                 <!-- Full Name -->
@@ -104,6 +104,21 @@
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition duration-200">
                     </div>
                     @error('phone')
+                        <span class="text-red-400 text-[11px] mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Profile Image -->
+                <div>
+                    <label for="profile_image" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Profile Picture</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                            <i class="fa-solid fa-image text-xs"></i>
+                        </span>
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*"
+                               class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-xs text-slate-400 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-amber-500/10 file:text-amber-400 hover:file:bg-amber-500/20 file:cursor-pointer transition duration-200">
+                    </div>
+                    @error('profile_image')
                         <span class="text-red-400 text-[11px] mt-1 block">{{ $message }}</span>
                     @enderror
                 </div>

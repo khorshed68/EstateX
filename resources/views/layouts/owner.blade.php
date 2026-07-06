@@ -84,9 +84,13 @@
         <!-- User Profile Footer -->
         <div class="p-4 border-t border-slate-800 bg-slate-950/40">
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-bold text-white shadow-inner">
-                    {{ substr(session('owner_user_name', 'Owner'), 0, 1) }}
-                </div>
+                @if(session('owner_user_image'))
+                    <img src="{{ session('owner_user_image') }}" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-inner border border-amber-500/20">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-bold text-white shadow-inner">
+                        {{ substr(session('owner_user_name', 'Owner'), 0, 1) }}
+                    </div>
+                @endif
                 <div>
                     <h4 class="text-sm font-semibold text-slate-200">{{ session('owner_user_name', 'Property Owner') }}</h4>
                     <span class="text-xs text-amber-400 font-medium">Standard Landlord</span>

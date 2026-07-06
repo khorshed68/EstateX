@@ -60,7 +60,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('agent.register.submit') }}" method="POST" class="space-y-5">
+            <form action="{{ route('agent.register.submit') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
                 @csrf
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -186,6 +186,21 @@
                             <span class="text-red-400 text-[11px] mt-1 block">{{ $message }}</span>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Profile Image -->
+                <div>
+                    <label for="profile_image" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Profile Picture</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                            <i class="fa-solid fa-image text-xs"></i>
+                        </span>
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*"
+                               class="w-full bg-slate-950 border border-slate-900 rounded-xl py-2.5 pl-10 pr-4 text-xs text-slate-400 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20 file:cursor-pointer transition duration-200">
+                    </div>
+                    @error('profile_image')
+                        <span class="text-red-400 text-[11px] mt-1 block">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <!-- About me -->

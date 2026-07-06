@@ -84,9 +84,13 @@
         <!-- User Profile Footer -->
         <div class="p-4 border-t border-slate-800 bg-slate-950/40">
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-white shadow-inner">
-                    {{ substr(session('buyer_user_name', 'Buyer'), 0, 1) }}
-                </div>
+                @if(session('buyer_user_image'))
+                    <img src="{{ session('buyer_user_image') }}" alt="Profile" class="w-10 h-10 rounded-full object-cover shadow-inner border border-emerald-500/20">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-white shadow-inner">
+                        {{ substr(session('buyer_user_name', 'Buyer'), 0, 1) }}
+                    </div>
+                @endif
                 <div>
                     <h4 class="text-sm font-semibold text-slate-200">{{ session('buyer_user_name', 'Guest Buyer') }}</h4>
                     <span class="text-xs text-emerald-400 font-medium">Standard Member</span>

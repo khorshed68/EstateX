@@ -225,7 +225,8 @@ class BuyerTest extends TestCase
             'email' => 'registertest@estatex.com',
             'password' => 'secret123',
             'password_confirmation' => 'secret123',
-            'phone' => '01799999999'
+            'phone' => '01799999999',
+            'profile_image' => \Illuminate\Http\UploadedFile::fake()->create('avatar.jpg', 100, 'image/jpeg')
         ]);
 
         $response->assertStatus(302);
@@ -233,9 +234,16 @@ class BuyerTest extends TestCase
         $response->assertSessionHas('buyer_user_id');
 
         // Verify exists in database
-        $user = DB::select("SELECT id, fullname, roleId FROM users WHERE email = :email", ['email' => 'registertest@estatex.com']);
+        $user = DB::select("SELECT id, fullname, roleId, profileImage FROM users WHERE email = :email", ['email' => 'registertest@estatex.com']);
         $this->assertNotEmpty($user);
         $this->assertEquals(3, $user[0]->roleid); // Should have buyer roleId = 3
+        $this->assertNotEmpty($user[0]->profileimage);
+
+        // Clean up
+        if (!empty($user[0]->profileimage) && file_exists(public_path($user[0]->profileimage))) {
+            unlink(public_path($user[0]->profileimage));
+        }
+        DB::delete("DELETE FROM users WHERE email = :email", ['email' => 'registertest@estatex.com']);
     }
 
     /**

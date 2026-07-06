@@ -75,6 +75,7 @@ class AgentAuthController extends Controller
             'agent_user_id' => $user->id,
             'agent_user_name' => $user->fullname,
             'agent_id' => $user->agent_table_id,
+            'agent_user_image' => $user->profileimage,
         ]);
 
         return redirect()->route('agent.dashboard')->with('success', 'Welcome back, Agent ' . $user->fullname . '!');
@@ -105,6 +106,7 @@ class AgentAuthController extends Controller
             'license_no' => 'required|string|max:100',
             'experience_years' => 'required|integer|min:0',
             'about' => 'nullable|string|max:1000',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $email = $request->input('email');
@@ -118,20 +120,31 @@ class AgentAuthController extends Controller
         try {
             DB::beginTransaction();
 
+            // Upload profile picture
+            $profileImagePath = null;
+            if ($request->hasFile('profile_image')) {
+                $image = $request->file('profile_image');
+                $name = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/uploads/profiles');
+                $image->move($destinationPath, $name);
+                $profileImagePath = '/uploads/profiles/' . $name;
+            }
+
             // Generate next user ID manually
             $nextIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
             $nextUserId = $nextIdResult[0]->next_id;
 
             // Insert new user (roleId = 2 for agent, status = active) using raw SQL
             DB::insert("
-                INSERT INTO users (id, roleId, fullname, email, password, phone, status) 
-                VALUES (:id, 2, :fullname, :email, :password, :phone, 'active')
+                INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status) 
+                VALUES (:id, 2, :fullname, :email, :password, :phone, :profileImage, 'active')
             ", [
                 'id' => $nextUserId,
                 'fullname' => $request->input('fullname'),
                 'email' => $email,
                 'password' => Hash::make($request->input('password')),
-                'phone' => $request->input('phone')
+                'phone' => $request->input('phone'),
+                'profileImage' => $profileImagePath
             ]);
 
             // Generate next agent profile ID manually
@@ -158,6 +171,7 @@ class AgentAuthController extends Controller
                 'agent_user_id' => $nextUserId,
                 'agent_user_name' => $request->input('fullname'),
                 'agent_id' => $nextAgentId,
+                'agent_user_image' => $profileImagePath,
             ]);
 
             return redirect()->route('agent.dashboard')->with('success', 'Your agent account has been created successfully!');
@@ -172,7 +186,7 @@ class AgentAuthController extends Controller
      */
     public function logout()
     {
-        session()->forget(['agent_user_id', 'agent_user_name', 'agent_id']);
+        session()->forget(['agent_user_id', 'agent_user_name', 'agent_id', 'agent_user_image']);
         return redirect()->route('agent.login')->with('success', 'Logged out successfully.');
     }
 }

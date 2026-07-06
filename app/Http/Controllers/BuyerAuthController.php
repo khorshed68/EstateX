@@ -64,6 +64,7 @@ class BuyerAuthController extends Controller
         session([
             'buyer_user_id' => $user->id,
             'buyer_user_name' => $user->fullname,
+            'buyer_user_image' => $user->profileimage,
         ]);
 
         return redirect()->route('buyer.dashboard')->with('success', 'Welcome, ' . $user->fullname . '!');
@@ -89,7 +90,8 @@ class BuyerAuthController extends Controller
             'fullname' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'password' => 'required|string|min:6|confirmed',
-            'phone' => 'nullable|string|max:50'
+            'phone' => 'nullable|string|max:50',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $email = $request->input('email');
@@ -101,26 +103,38 @@ class BuyerAuthController extends Controller
         }
 
         try {
+            // Upload profile picture
+            $profileImagePath = null;
+            if ($request->hasFile('profile_image')) {
+                $image = $request->file('profile_image');
+                $name = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/uploads/profiles');
+                $image->move($destinationPath, $name);
+                $profileImagePath = '/uploads/profiles/' . $name;
+            }
+
             // Generate next ID manually
             $nextIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
             $nextId = $nextIdResult[0]->next_id;
 
             // Insert new buyer user (roleId = 3, status = active) using raw SQL
             DB::insert("
-                INSERT INTO users (id, roleId, fullname, email, password, phone, status) 
-                VALUES (:id, 3, :fullname, :email, :password, :phone, 'active')
+                INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status) 
+                VALUES (:id, 3, :fullname, :email, :password, :phone, :profileImage, 'active')
             ", [
                 'id' => $nextId,
                 'fullname' => $request->input('fullname'),
                 'email' => $email,
                 'password' => Hash::make($request->input('password')),
-                'phone' => $request->input('phone')
+                'phone' => $request->input('phone'),
+                'profileImage' => $profileImagePath
             ]);
 
             // Set session variables to log them in automatically
             session([
                 'buyer_user_id' => $nextId,
                 'buyer_user_name' => $request->input('fullname'),
+                'buyer_user_image' => $profileImagePath,
             ]);
 
             return redirect()->route('buyer.dashboard')->with('success', 'Your buyer account has been created successfully!');
@@ -134,7 +148,7 @@ class BuyerAuthController extends Controller
      */
     public function logout()
     {
-        session()->forget(['buyer_user_id', 'buyer_user_name']);
+        session()->forget(['buyer_user_id', 'buyer_user_name', 'buyer_user_image']);
         return redirect()->route('buyer.login')->with('success', 'Logged out successfully.');
     }
 }

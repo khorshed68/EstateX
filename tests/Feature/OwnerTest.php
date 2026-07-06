@@ -84,7 +84,8 @@ class OwnerTest extends TestCase
             'email' => 'ownertest@estatex.com',
             'password' => 'secret123',
             'password_confirmation' => 'secret123',
-            'phone' => '01899999999'
+            'phone' => '01899999999',
+            'profile_image' => \Illuminate\Http\UploadedFile::fake()->create('avatar.jpg', 100, 'image/jpeg')
         ]);
 
         $response->assertStatus(302);
@@ -92,8 +93,15 @@ class OwnerTest extends TestCase
         $response->assertSessionHas('owner_user_id');
 
         // Check exists in DB
-        $user = DB::select("SELECT id FROM users WHERE email = 'ownertest@estatex.com'");
+        $user = DB::select("SELECT id, profileImage FROM users WHERE email = 'ownertest@estatex.com'");
         $this->assertNotEmpty($user);
+        $this->assertNotEmpty($user[0]->profileimage);
+
+        // Clean up
+        if (!empty($user[0]->profileimage) && file_exists(public_path($user[0]->profileimage))) {
+            unlink(public_path($user[0]->profileimage));
+        }
+        DB::delete("DELETE FROM users WHERE email = :email", ['email' => 'ownertest@estatex.com']);
     }
 
     /**

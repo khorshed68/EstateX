@@ -97,7 +97,8 @@ class AgentTest extends TestCase
             'agency_name' => 'Test Agency Co.',
             'license_no' => 'LIC-7728',
             'experience_years' => 4,
-            'about' => 'Bio of test agent.'
+            'about' => 'Bio of test agent.',
+            'profile_image' => \Illuminate\Http\UploadedFile::fake()->create('avatar.jpg', 100, 'image/jpeg')
         ]);
 
         $response->assertStatus(302);
@@ -106,14 +107,18 @@ class AgentTest extends TestCase
         $response->assertSessionHas('agent_id');
 
         // Check exists in DB
-        $user = DB::select("SELECT id FROM users WHERE email = 'testagent@estatex.com'");
+        $user = DB::select("SELECT id, profileImage FROM users WHERE email = 'testagent@estatex.com'");
         $this->assertNotEmpty($user);
+        $this->assertNotEmpty($user[0]->profileimage);
 
         $agent = DB::select("SELECT id FROM agents WHERE userId = :userId", ['userId' => $user[0]->id]);
         $this->assertNotEmpty($agent);
 
         // Cleanup after test case
         $uId = $user[0]->id;
+        if (!empty($user[0]->profileimage) && file_exists(public_path($user[0]->profileimage))) {
+            unlink(public_path($user[0]->profileimage));
+        }
         DB::delete("DELETE FROM agents WHERE userId = :userid", ['userid' => $uId]);
         DB::delete("DELETE FROM users WHERE id = :userid", ['userid' => $uId]);
     }
