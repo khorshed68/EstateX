@@ -25,12 +25,15 @@
         body {
             background-color: #030712;
             background-image: 
-                radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.08) 0, transparent 50%),
-                radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.08) 0, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.1) 0, transparent 50%);
+                radial-gradient(circle at center, rgba(3, 7, 18, 0.2) 0%, rgba(3, 7, 18, 0.90) 80%),
+                url('/images/welcome_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -49,10 +52,6 @@
                 EX
             </div>
             <span class="font-outfit font-extrabold text-xl tracking-tight bg-gradient-to-r from-amber-400 via-orange-200 to-white bg-clip-text text-transparent">EstateX</span>
-        </div>
-        <div class="flex items-center gap-2 bg-slate-900/80 border border-slate-800 rounded-full px-4 py-1.5 text-xs">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span class="text-slate-400 font-medium">Oracle Live Connection</span>
         </div>
     </header>
 
