@@ -40,7 +40,8 @@ class BuyerBookingController extends Controller
         $request->validate([
             'property_id' => 'required|integer',
             'booking_type' => 'required|string|in:visit,reservation',
-            'visit_date' => 'nullable|string', 
+            'visit_date' => 'nullable|date', 
+            'visit_slot' => 'nullable|string',
             'start_date' => 'nullable|date',   
             'end_date' => 'nullable|date',     
             'guests' => 'required|integer|min:1',
@@ -68,14 +69,80 @@ class BuyerBookingController extends Controller
         try {
             DB::beginTransaction();
 
+            // Perform availability checking / date conflict validation inside transaction
+            if ($bookingType === 'visit') {
+                $visitDateInput = $request->input('visit_date');
+                $visitSlotInput = $request->input('visit_slot');
+                
+                if (!$visitDateInput || !$visitSlotInput) {
+                    return back()->withErrors(['visit_date' => 'Both visit date and time slot are required for scheduling a visit.'])->withInput();
+                }
+
+                if (strtotime($visitDateInput) < strtotime(date('Y-m-d'))) {
+                    return back()->withErrors(['visit_date' => 'The visit date cannot be in the past.'])->withInput();
+                }
+
+                $visitDate = date('Y-m-d H:i:s', strtotime("$visitDateInput $visitSlotInput"));
+                $startDate = null;
+                $endDate = null;
+
+                // Check slot conflict for this property
+                $conflict = DB::select("
+                    SELECT id FROM bookings 
+                    WHERE propertyId = :propertyId 
+                      AND bookingType = 'visit' 
+                      AND status IN ('pending', 'approved', 'completed') 
+                      AND visitDate = TO_TIMESTAMP(:visitDate, 'YYYY-MM-DD HH24:MI:SS')
+                ", [
+                    'propertyId' => $propertyId,
+                    'visitDate' => $visitDate
+                ]);
+
+                if (!empty($conflict)) {
+                    return back()->with('error', 'The selected time slot is already booked for a visit. Please choose another date or time slot.')->withInput();
+                }
+            } else {
+                $startDateInput = $request->input('start_date');
+                $endDateInput = $request->input('end_date');
+
+                if (!$startDateInput || !$endDateInput) {
+                    return back()->withErrors(['start_date' => 'Both start date and end date are required for reserving a property.'])->withInput();
+                }
+
+                if (strtotime($startDateInput) < strtotime(date('Y-m-d'))) {
+                    return back()->withErrors(['start_date' => 'The reservation start date cannot be in the past.'])->withInput();
+                }
+
+                if (strtotime($endDateInput) < strtotime($startDateInput)) {
+                    return back()->withErrors(['end_date' => 'The reservation end date must be after the start date.'])->withInput();
+                }
+
+                $startDate = date('Y-m-d', strtotime($startDateInput));
+                $endDate = date('Y-m-d', strtotime($endDateInput));
+                $visitDate = null;
+
+                // Check reservation overlap conflicts
+                $conflict = DB::select("
+                    SELECT id FROM bookings 
+                    WHERE propertyId = :propertyId 
+                      AND bookingType = 'reservation' 
+                      AND status IN ('pending', 'approved', 'completed') 
+                      AND startDate <= TO_DATE(:endDate, 'YYYY-MM-DD') 
+                      AND endDate >= TO_DATE(:startDate, 'YYYY-MM-DD')
+                ", [
+                    'propertyId' => $propertyId,
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]);
+
+                if (!empty($conflict)) {
+                    return back()->with('error', 'This property is already reserved or has a pending reservation during the selected date range. Please select other dates.')->withInput();
+                }
+            }
+
             // Get next ID manually (since sequence isn't auto-triggered)
             $nextBookingIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM bookings");
             $bookingId = $nextBookingIdResult[0]->next_id;
-
-            // Formats visit date if provided
-            $visitDate = $request->input('visit_date') ? date('Y-m-d H:i:s', strtotime($request->input('visit_date'))) : null;
-            $startDate = $request->input('start_date') ? date('Y-m-d', strtotime($request->input('start_date'))) : null;
-            $endDate = $request->input('end_date') ? date('Y-m-d', strtotime($request->input('end_date'))) : null;
 
             // Assemble query with conditional date format helpers for Oracle compatibility
             $visitDateSql = $visitDate ? "TO_TIMESTAMP(:visitDate, 'YYYY-MM-DD HH24:MI:SS')" : "NULL";

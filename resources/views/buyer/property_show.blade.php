@@ -202,23 +202,39 @@
                         </div>
                     </div>
 
-                    <!-- Visit Date Input (Show for visits) -->
-                    <div id="visit-date-container">
-                        <label for="visit_date" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Visit Date & Time</label>
-                        <input type="datetime-local" id="visit_date" name="visit_date" 
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
+                    <!-- Visit Date & Time Slot Input (Show for visits) -->
+                    <div id="visit-date-container" class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="visit_date" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Visit Date</label>
+                            <input type="date" id="visit_date" name="visit_date" min="{{ date('Y-m-d') }}"
+                                   class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
+                        </div>
+                        <div>
+                            <label for="visit_slot" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Time Slot</label>
+                            <select id="visit_slot" name="visit_slot"
+                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                                <option value="">Select Slot</option>
+                                <option value="09:00">09:00 AM - 10:00 AM</option>
+                                <option value="10:00">10:00 AM - 11:00 AM</option>
+                                <option value="11:00">11:00 AM - 12:00 PM</option>
+                                <option value="13:00">01:00 PM - 02:00 PM</option>
+                                <option value="14:00">02:00 PM - 03:00 PM</option>
+                                <option value="15:00">03:00 PM - 04:00 PM</option>
+                                <option value="16:00">04:00 PM - 05:00 PM</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Reservation Dates (Show for reservations) -->
                     <div id="reservation-dates-container" class="hidden grid grid-cols-2 gap-3">
                         <div>
                             <label for="start_date" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Start Date</label>
-                            <input type="date" id="start_date" name="start_date" 
+                            <input type="date" id="start_date" name="start_date" min="{{ date('Y-m-d') }}"
                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
                         </div>
                         <div>
                             <label for="end_date" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">End Date</label>
-                            <input type="date" id="end_date" name="end_date" 
+                            <input type="date" id="end_date" name="end_date" min="{{ date('Y-m-d') }}"
                                    class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
                         </div>
                     </div>
@@ -339,6 +355,7 @@
             submitBtn.textContent = 'Schedule Site Tour';
             
             document.getElementById('visit_date').required = true;
+            document.getElementById('visit_slot').required = true;
             document.getElementById('start_date').required = false;
             document.getElementById('end_date').required = false;
         } else {
@@ -348,14 +365,23 @@
             submitBtn.textContent = 'Pay Deposit & Reserve';
 
             document.getElementById('visit_date').required = false;
+            document.getElementById('visit_slot').required = false;
             document.getElementById('start_date').required = true;
             document.getElementById('end_date').required = true;
         }
     }
     
-    // Set initial state
+    // Set initial state and listener for start_date changes
     document.addEventListener('DOMContentLoaded', function() {
         toggleBookingFields('visit');
+
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        if (startDateInput && endDateInput) {
+            startDateInput.addEventListener('change', function() {
+                endDateInput.min = this.value;
+            });
+        }
     });
 </script>
 @endsection

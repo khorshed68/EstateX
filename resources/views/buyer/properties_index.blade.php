@@ -75,9 +75,96 @@
                 </select>
             </div>
 
+            <!-- Advanced Filters Toggle -->
+            <div class="md:col-span-12 flex justify-start mt-2">
+                <button type="button" onclick="toggleAdvancedFilters()" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition duration-200 flex items-center gap-1.5 focus:outline-none">
+                    <i id="advanced-chevron" class="fa-solid fa-chevron-down text-[10px]"></i>
+                    <span>Advanced Specifications Filters</span>
+                </button>
+            </div>
+
+            <!-- Advanced Filters Drawer -->
+            <div id="advanced-filters-drawer" class="hidden md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4 pt-4 border-t border-slate-900 w-full">
+                <!-- Bedrooms -->
+                <div class="md:col-span-2">
+                    <label for="bedrooms" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Min Bedrooms</label>
+                    <select id="bedrooms" name="bedrooms" 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                        <option value="">Any</option>
+                        <option value="1" {{ $bedrooms == '1' ? 'selected' : '' }}>1+ Bed</option>
+                        <option value="2" {{ $bedrooms == '2' ? 'selected' : '' }}>2+ Bed</option>
+                        <option value="3" {{ $bedrooms == '3' ? 'selected' : '' }}>3+ Bed</option>
+                        <option value="4" {{ $bedrooms == '4' ? 'selected' : '' }}>4+ Bed</option>
+                    </select>
+                </div>
+
+                <!-- Bathrooms -->
+                <div class="md:col-span-2">
+                    <label for="bathrooms" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Min Bathrooms</label>
+                    <select id="bathrooms" name="bathrooms" 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                        <option value="">Any</option>
+                        <option value="1" {{ $bathrooms == '1' ? 'selected' : '' }}>1+ Bath</option>
+                        <option value="2" {{ $bathrooms == '2' ? 'selected' : '' }}>2+ Bath</option>
+                        <option value="3" {{ $bathrooms == '3' ? 'selected' : '' }}>3+ Bath</option>
+                        <option value="4" {{ $bathrooms == '4' ? 'selected' : '' }}>4+ Bath</option>
+                    </select>
+                </div>
+
+                <!-- Min Area -->
+                <div class="md:col-span-2">
+                    <label for="min_area" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Min Area (sqft)</label>
+                    <input type="number" id="min_area" name="min_area" value="{{ $minArea }}" placeholder="Min sqft" 
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
+                </div>
+
+                <!-- Max Area -->
+                <div class="md:col-span-2">
+                    <label for="max_area" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Max Area (sqft)</label>
+                    <input type="number" id="max_area" name="max_area" value="{{ $maxArea }}" placeholder="Max sqft" 
+                           class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition duration-200">
+                </div>
+
+                <!-- Furnished Status -->
+                <div class="md:col-span-4">
+                    <label for="furnished_status" class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Furnished Status</label>
+                    <select id="furnished_status" name="furnished_status" 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-300 focus:outline-none focus:border-emerald-500 transition duration-200">
+                        <option value="">Any</option>
+                        <option value="furnished" {{ $furnishedStatus === 'furnished' ? 'selected' : '' }}>Fully Furnished</option>
+                        <option value="semi-furnished" {{ $furnishedStatus === 'semi-furnished' ? 'selected' : '' }}>Semi-Furnished</option>
+                        <option value="unfurnished" {{ $furnishedStatus === 'unfurnished' ? 'selected' : '' }}>Unfurnished</option>
+                    </select>
+                </div>
+
+                <!-- Amenity Checkboxes -->
+                <div class="md:col-span-12 grid grid-cols-2 md:grid-cols-5 gap-4 mt-2">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200 transition duration-200">
+                        <input type="checkbox" name="parking" value="1" {{ $parking ? 'checked' : '' }} class="rounded border-slate-805 bg-slate-955 text-emerald-500 focus:ring-emerald-500">
+                        <span>Parking Available</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200 transition duration-200">
+                        <input type="checkbox" name="balcony" value="1" {{ $balcony ? 'checked' : '' }} class="rounded border-slate-805 bg-slate-955 text-emerald-500 focus:ring-emerald-500">
+                        <span>Has Balcony</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200 transition duration-200">
+                        <input type="checkbox" name="lift" value="1" {{ $lift ? 'checked' : '' }} class="rounded border-slate-805 bg-slate-955 text-emerald-500 focus:ring-emerald-500">
+                        <span>Elevator / Lift</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200 transition duration-200">
+                        <input type="checkbox" name="swimming_pool" value="1" {{ $swimmingPool ? 'checked' : '' }} class="rounded border-slate-805 bg-slate-955 text-emerald-500 focus:ring-emerald-500">
+                        <span>Swimming Pool</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-400 hover:text-slate-200 transition duration-200">
+                        <input type="checkbox" name="pet_friendly" value="1" {{ $petFriendly ? 'checked' : '' }} class="rounded border-slate-805 bg-slate-955 text-emerald-500 focus:ring-emerald-500">
+                        <span>Pet Friendly</span>
+                    </label>
+                </div>
+            </div>
+
             <!-- Action Buttons -->
             <div class="md:col-span-12 flex justify-end gap-2 mt-2">
-                @if($search || $locationId || $typeId || $minPrice || $maxPrice)
+                @if($search || $locationId || $typeId || $minPrice || $maxPrice || $bedrooms || $bathrooms || $minArea || $maxArea || $furnishedStatus || $parking || $balcony || $lift || $swimmingPool || $petFriendly)
                     <a href="{{ route('buyer.dashboard') }}" class="px-4 py-2 border border-slate-800 hover:bg-slate-800 rounded-xl text-xs font-bold text-slate-400 transition duration-200 flex items-center justify-center">
                         Clear Filters
                     </a>
@@ -170,4 +257,33 @@
         @endforelse
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function toggleAdvancedFilters(forceOpen = false) {
+        const drawer = document.getElementById('advanced-filters-drawer');
+        const chevron = document.getElementById('advanced-chevron');
+        
+        if (forceOpen || drawer.classList.contains('hidden')) {
+            drawer.classList.remove('hidden');
+            drawer.classList.add('grid');
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+        } else {
+            drawer.classList.add('hidden');
+            drawer.classList.remove('grid');
+            chevron.classList.add('fa-chevron-down');
+            chevron.classList.remove('fa-chevron-up');
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Automatically open the drawer if any advanced filters are active
+        const hasAdvancedFilters = {{ ($bedrooms || $bathrooms || $minArea || $maxArea || $furnishedStatus || $parking || $balcony || $lift || $swimmingPool || $petFriendly) ? 'true' : 'false' }};
+        if (hasAdvancedFilters) {
+            toggleAdvancedFilters(true);
+        }
+    });
+</script>
 @endsection

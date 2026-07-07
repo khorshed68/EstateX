@@ -8,49 +8,49 @@
     <!-- KPI Metric Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Card 1: Users -->
-        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm">
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-blue-500/30 hover:bg-slate-900/50 transition duration-300 group" onclick="window.location='{{ route('admin.users') }}'">
             <div>
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Total Platform Users</span>
-                <h3 class="text-3xl font-outfit font-bold text-white mt-2">{{ number_format($totalUsers) }}</h3>
+                <h3 class="text-3xl font-outfit font-bold text-white mt-2 group-hover:text-blue-400 transition duration-300">{{ number_format($totalUsers) }}</h3>
                 <span class="text-xs text-blue-400 font-medium block mt-1">Registered Accounts</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl shadow-inner">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl shadow-inner group-hover:scale-105 transition duration-300">
                 <i class="fa-solid fa-users"></i>
             </div>
         </div>
 
         <!-- Card 2: Listings -->
-        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm">
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-green-500/30 hover:bg-slate-900/50 transition duration-300 group" onclick="window.location='{{ route('admin.properties') }}'">
             <div>
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Active Listings</span>
-                <h3 class="text-3xl font-outfit font-bold text-white mt-2">{{ number_format($totalListings) }}</h3>
+                <h3 class="text-3xl font-outfit font-bold text-white mt-2 group-hover:text-green-400 transition duration-300">{{ number_format($totalListings) }}</h3>
                 <span class="text-xs text-green-400 font-medium block mt-1">Available Marketplace</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xl shadow-inner">
+            <div class="w-12 h-12 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xl shadow-inner group-hover:scale-105 transition duration-300">
                 <i class="fa-solid fa-house-circle-check"></i>
             </div>
         </div>
 
         <!-- Card 3: Revenue -->
-        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm">
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-yellow-500/30 hover:bg-slate-900/50 transition duration-300 group" onclick="window.location='{{ route('admin.transactions') }}'">
             <div>
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Gross Revenue</span>
-                <h3 class="text-3xl font-outfit font-bold text-white mt-2">৳{{ number_format($totalRevenue) }}</h3>
+                <h3 class="text-3xl font-outfit font-bold text-white mt-2 group-hover:text-yellow-400 transition duration-300">৳{{ number_format($totalRevenue) }}</h3>
                 <span class="text-xs text-yellow-400 font-medium block mt-1">Completed Deals</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl shadow-inner">
+            <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl shadow-inner group-hover:scale-105 transition duration-300">
                 <i class="fa-solid fa-money-bill-trend-up"></i>
             </div>
         </div>
 
         <!-- Card 4: Bookings -->
-        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm">
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-500/30 hover:bg-slate-900/50 transition duration-300 group" onclick="window.location='{{ route('admin.bookings') }}'">
             <div>
                 <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider block">Booking Success Rate</span>
-                <h3 class="text-3xl font-outfit font-bold text-white mt-2">{{ $successRate }}%</h3>
+                <h3 class="text-3xl font-outfit font-bold text-white mt-2 group-hover:text-indigo-400 transition duration-300">{{ $successRate }}%</h3>
                 <span class="text-xs text-indigo-400 font-medium block mt-1">{{ number_format($totalBookings) }} Total Appointments</span>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl shadow-inner">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl shadow-inner group-hover:scale-105 transition duration-300">
                 <i class="fa-solid fa-calendar-check"></i>
             </div>
         </div>
@@ -93,7 +93,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-800/40 text-slate-300">
                         @forelse($agents as $agent)
-                            <tr>
+                            <tr class="hover:bg-slate-800/30 cursor-pointer transition duration-150" onclick="window.location='{{ route('admin.agents') }}?search={{ urlencode($agent->agent_name) }}'">
                                 <td class="py-3 font-medium text-slate-200">{{ $agent->agent_name }}</td>
                                 <td class="py-3 text-slate-400">{{ $agent->agencyname ?? 'Independent' }}</td>
                                 <td class="py-3 text-center">{{ $agent->active_listings }}</td>
@@ -127,7 +127,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-800/40 text-slate-300">
                         @forelse($trendingProperties as $prop)
-                            <tr>
+                            <tr class="hover:bg-slate-800/30 cursor-pointer transition duration-150" onclick="window.location='{{ route('admin.properties') }}?search={{ urlencode($prop->title) }}'">
                                 <td class="py-3 font-medium text-slate-200 truncate max-w-[160px]" title="{{ $prop->title }}">{{ $prop->title }}</td>
                                 <td class="py-3 text-slate-400">{{ $prop->areaname }}, {{ $prop->city }}</td>
                                 <td class="py-3 font-semibold text-slate-300">৳{{ number_format($prop->price) }}</td>
@@ -169,7 +169,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-800/40 text-slate-400">
                     @forelse($auditLogs as $log)
-                        <tr class="hover:bg-slate-850/10">
+                        <tr class="hover:bg-slate-800/30 cursor-pointer transition duration-150" onclick="window.location='{{ route('admin.audit-logs') }}'">
                             <td class="py-3 font-bold text-slate-500">#{{ $log->id }}</td>
                             <td class="py-3 text-slate-200">{{ $log->admin_name }}</td>
                             <td class="py-3">

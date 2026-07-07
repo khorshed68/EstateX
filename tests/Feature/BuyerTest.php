@@ -154,13 +154,17 @@ class BuyerTest extends TestCase
      */
     public function test_buyer_can_create_site_visit_booking(): void
     {
+        // Clean up any existing bookings from previous test runs
+        DB::delete("DELETE FROM bookings WHERE propertyId = 1 AND notes = 'Looking forward to the visit'");
+
         $response = $this->withSession([
             'buyer_user_id' => 4,
             'buyer_user_name' => 'Rahim Ahmed'
         ])->post('/buyer/bookings/store', [
             'property_id' => 1,
             'booking_type' => 'visit',
-            'visit_date' => date('Y-m-d H:i:s', strtotime('+2 days')),
+            'visit_date' => date('Y-m-d', strtotime('+2 days')),
+            'visit_slot' => '10:00',
             'guests' => 2,
             'notes' => 'Looking forward to the visit'
         ]);
@@ -315,5 +319,121 @@ class BuyerTest extends TestCase
         // Verify deleted from database
         $compDeleted = DB::select("SELECT id FROM comparisons WHERE id = :id", ['id' => $compId]);
         $this->assertEmpty($compDeleted);
+    }
+
+    /**
+     * Test booking conflict validations.
+     */
+    public function test_booking_conflict_validation(): void
+    {
+        // Clean up any existing bookings from previous test runs
+        DB::delete("DELETE FROM bookings WHERE propertyId = 1 AND notes IN ('First visit booking', 'Conflicting visit booking')");
+        DB::delete("DELETE FROM bookings WHERE propertyId = 2 AND notes IN ('Reservation booking', 'Conflicting reservation booking')");
+
+        $visitDate = date('Y-m-d', strtotime('+3 days'));
+        $visitSlot = '11:00';
+
+        // 1. Create first site visit booking
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->post('/buyer/bookings/store', [
+            'property_id' => 1,
+            'booking_type' => 'visit',
+            'visit_date' => $visitDate,
+            'visit_slot' => $visitSlot,
+            'guests' => 1,
+            'notes' => 'First visit booking'
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        // 2. Attempt to create a second site visit booking for the exact same property, date, and slot
+        $response2 = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->post('/buyer/bookings/store', [
+            'property_id' => 1,
+            'booking_type' => 'visit',
+            'visit_date' => $visitDate,
+            'visit_slot' => $visitSlot,
+            'guests' => 1,
+            'notes' => 'Conflicting visit booking'
+        ]);
+
+        // Verify it was redirected back with an error session message
+        $response2->assertStatus(302);
+        $response2->assertSessionHas('error');
+        $this->assertStringContainsString('already booked', session('error'));
+
+        // 3. Create a reservation booking
+        $startDate = date('Y-m-d', strtotime('+5 days'));
+        $endDate = date('Y-m-d', strtotime('+10 days'));
+
+        $responseReservation = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->post('/buyer/bookings/store', [
+            'property_id' => 2,
+            'booking_type' => 'reservation',
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'guests' => 1,
+            'notes' => 'Reservation booking'
+        ]);
+
+        $responseReservation->assertStatus(302);
+        
+        // 4. Attempt to create an overlapping reservation
+        $overlappingStartDate = date('Y-m-d', strtotime('+8 days'));
+        $overlappingEndDate = date('Y-m-d', strtotime('+12 days'));
+
+        $responseConflictingRes = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->post('/buyer/bookings/store', [
+            'property_id' => 2,
+            'booking_type' => 'reservation',
+            'start_date' => $overlappingStartDate,
+            'end_date' => $overlappingEndDate,
+            'guests' => 1,
+            'notes' => 'Conflicting reservation booking'
+        ]);
+
+        $responseConflictingRes->assertStatus(302);
+        $responseConflictingRes->assertSessionHas('error');
+        $this->assertStringContainsString('already reserved', session('error'));
+    }
+
+    /**
+     * Test advanced search and specifications filtering.
+     */
+    public function test_buyer_can_filter_properties_with_advanced_specifications(): void
+    {
+        // 1. Filter by minimum bedrooms and bathrooms
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->get('/buyer/dashboard?bedrooms=3&bathrooms=2');
+
+        $response->assertStatus(200);
+        $response->assertSee('Real Estate Marketplace');
+
+        // 2. Filter by area size and furnished status
+        $response2 = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->get('/buyer/dashboard?min_area=1000&max_area=3000&furnished_status=furnished');
+
+        $response2->assertStatus(200);
+
+        // 3. Filter by amenities (parking and swimming pool)
+        $response3 = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Rahim Ahmed'
+        ])->get('/buyer/dashboard?parking=1&swimming_pool=1');
+
+        $response3->assertStatus(200);
     }
 }

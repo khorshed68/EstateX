@@ -20,6 +20,17 @@ class BuyerDashboardController extends Controller
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
         
+        $bedrooms = $request->input('bedrooms');
+        $bathrooms = $request->input('bathrooms');
+        $minArea = $request->input('min_area');
+        $maxArea = $request->input('max_area');
+        $furnishedStatus = $request->input('furnished_status');
+        $parking = $request->input('parking');
+        $balcony = $request->input('balcony');
+        $lift = $request->input('lift');
+        $swimmingPool = $request->input('swimming_pool');
+        $petFriendly = $request->input('pet_friendly');
+        
         // Build base query to select active listings
         $query = "
             SELECT p.*, l.areaName, l.city, pt.typeName,
@@ -57,6 +68,51 @@ class BuyerDashboardController extends Controller
             $bindings['max_price'] = $maxPrice;
         }
         
+        if ($bedrooms) {
+            $query .= " AND p.bedrooms >= :bedrooms";
+            $bindings['bedrooms'] = $bedrooms;
+        }
+        
+        if ($bathrooms) {
+            $query .= " AND p.bathrooms >= :bathrooms";
+            $bindings['bathrooms'] = $bathrooms;
+        }
+        
+        if ($minArea) {
+            $query .= " AND p.areaSize >= :min_area";
+            $bindings['min_area'] = $minArea;
+        }
+        
+        if ($maxArea) {
+            $query .= " AND p.areaSize <= :max_area";
+            $bindings['max_area'] = $maxArea;
+        }
+        
+        if ($furnishedStatus) {
+            $query .= " AND p.furnishedStatus = :furnished_status";
+            $bindings['furnished_status'] = $furnishedStatus;
+        }
+        
+        if ($parking) {
+            $query .= " AND p.parking > 0";
+        }
+        
+        if ($balcony) {
+            $query .= " AND p.balcony > 0";
+        }
+        
+        if ($lift) {
+            $query .= " AND p.lift = 1";
+        }
+        
+        if ($swimmingPool) {
+            $query .= " AND p.swimmingPool = 1";
+        }
+        
+        if ($petFriendly) {
+            $query .= " AND p.petFriendly = 1";
+        }
+        
         $sort = $request->input('sort', 'newest');
         
         if ($sort === 'price_asc') {
@@ -85,7 +141,10 @@ class BuyerDashboardController extends Controller
         $locations = DB::select("SELECT id, areaName, city FROM locations ORDER BY city ASC, areaName ASC");
         $types = DB::select("SELECT id, typeName FROM property_types ORDER BY typeName ASC");
         
-        return view('buyer.properties_index', compact('properties', 'locations', 'types', 'search', 'locationId', 'typeId', 'minPrice', 'maxPrice', 'sort'));
+        return view('buyer.properties_index', compact(
+            'properties', 'locations', 'types', 'search', 'locationId', 'typeId', 'minPrice', 'maxPrice', 'sort',
+            'bedrooms', 'bathrooms', 'minArea', 'maxArea', 'furnishedStatus', 'parking', 'balcony', 'lift', 'swimmingPool', 'petFriendly'
+        ));
     }
 
     /**
