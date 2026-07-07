@@ -130,14 +130,7 @@ class BuyerAuthController extends Controller
                 'profileImage' => $profileImagePath
             ]);
 
-            // Set session variables to log them in automatically
-            session([
-                'buyer_user_id' => $nextId,
-                'buyer_user_name' => $request->input('fullname'),
-                'buyer_user_image' => $profileImagePath,
-            ]);
-
-            return redirect()->route('buyer.dashboard')->with('success', 'Your buyer account has been created successfully!');
+            return redirect()->route('buyer.login')->with('success', 'Your buyer account has been created successfully! Please sign in.');
         } catch (\Exception $e) {
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
         }

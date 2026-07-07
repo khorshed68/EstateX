@@ -234,5 +234,6 @@
         </div>
     </div>
 
+    @include('layouts.water_wave')
 </body>
 </html>

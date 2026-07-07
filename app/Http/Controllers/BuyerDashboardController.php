@@ -33,7 +33,7 @@ class BuyerDashboardController extends Controller
         
         // Build base query to select active listings
         $query = "
-            SELECT p.*, l.areaName, l.city, pt.typeName,
+            SELECT p.*, l.areaName, l.city, l.latitude, l.longitude, pt.typeName,
                    (SELECT imagePath FROM property_images WHERE propertyId = p.id AND isMain = 1 AND ROWNUM = 1) AS main_image
             FROM properties p
             JOIN locations l ON p.locationId = l.id
@@ -156,7 +156,7 @@ class BuyerDashboardController extends Controller
         
         // Fetch property details via raw join query
         $propertyData = DB::select("
-            SELECT p.*, l.areaName, l.city, l.country, pt.typeName,
+            SELECT p.*, l.areaName, l.city, l.country, l.latitude, l.longitude, pt.typeName,
                    u.fullname AS agent_name, u.email AS agent_email, u.phone AS agent_phone, ag.id AS agent_id, ag.agencyName, ag.rating AS agent_rating
             FROM properties p
             JOIN locations l ON p.locationId = l.id

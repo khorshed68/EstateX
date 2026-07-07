@@ -75,6 +75,10 @@ Route::middleware(['buyer'])->prefix('buyer')->group(function () {
     Route::get('/comparisons', [\App\Http\Controllers\BuyerDashboardController::class, 'comparisons'])->name('buyer.comparisons');
     Route::post('/comparisons/add', [\App\Http\Controllers\BuyerDashboardController::class, 'addComparison'])->name('buyer.comparisons.add');
     Route::delete('/comparisons/remove/{id}', [\App\Http\Controllers\BuyerDashboardController::class, 'removeComparison'])->name('buyer.comparisons.remove');
+
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\BuyerProfileController::class, 'index'])->name('buyer.profile');
+    Route::post('/profile/update', [\App\Http\Controllers\BuyerProfileController::class, 'update'])->name('buyer.profile.update');
 });
 
 // Owner Auth Routes
@@ -104,6 +108,10 @@ Route::middleware(['owner'])->prefix('owner')->group(function () {
     // Agent Management
     Route::get('/agents', [\App\Http\Controllers\OwnerAgentController::class, 'index'])->name('owner.agents');
     Route::post('/properties/{propertyId}/assign-agent', [\App\Http\Controllers\OwnerAgentController::class, 'assign'])->name('owner.properties.assign-agent');
+
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\OwnerProfileController::class, 'index'])->name('owner.profile');
+    Route::post('/profile/update', [\App\Http\Controllers\OwnerProfileController::class, 'update'])->name('owner.profile.update');
 });
 
 // Agent Auth Routes
@@ -130,5 +138,16 @@ Route::middleware(['agent'])->prefix('agent')->group(function () {
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\AgentProfileController::class, 'index'])->name('agent.profile');
     Route::post('/profile/update', [\App\Http\Controllers\AgentProfileController::class, 'update'])->name('agent.profile.update');
+
+    // Sales & Commission Analytics
+    Route::get('/analytics', [\App\Http\Controllers\AgentDashboardController::class, 'analytics'])->name('agent.analytics');
+
+    // Client Tracking CRM
+    Route::get('/clients', [\App\Http\Controllers\AgentDashboardController::class, 'clients'])->name('agent.clients');
+
+    // Availability Calendar
+    Route::get('/calendar', [\App\Http\Controllers\AgentDashboardController::class, 'calendar'])->name('agent.calendar');
+    Route::post('/calendar/store', [\App\Http\Controllers\AgentDashboardController::class, 'storeCalendar'])->name('agent.calendar.store');
+    Route::delete('/calendar/{id}/delete', [\App\Http\Controllers\AgentDashboardController::class, 'deleteCalendar'])->name('agent.calendar.delete');
 });
 

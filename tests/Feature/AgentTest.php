@@ -102,9 +102,8 @@ class AgentTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/agent/dashboard');
-        $response->assertSessionHas('agent_user_id');
-        $response->assertSessionHas('agent_id');
+        $response->assertRedirect('/agent/login');
+        $response->assertSessionMissing('agent_user_id');
 
         // Check exists in DB
         $user = DB::select("SELECT id, profileImage FROM users WHERE email = 'testagent@estatex.com'");
@@ -226,5 +225,120 @@ class AgentTest extends TestCase
         // Restore original values to prevent dirty DB state
         DB::update("UPDATE users SET fullname = 'Sheikh Sadi' WHERE id = 2");
         DB::update("UPDATE agents SET licenseNo = 'LIC-9982', experienceYears = 5, agencyName = 'Khulna Realty', about = 'Expert in KUET campus and KDA properties.' WHERE id = 1");
+    }
+
+    /**
+     * Test agent can view sales analytics and clients list.
+     */
+    public function test_agent_can_view_analytics_and_clients(): void
+    {
+        // 1. Test Analytics view
+        $response = $this->withSession([
+            'agent_user_id' => 2,
+            'agent_user_name' => 'Sheikh Sadi',
+            'agent_id' => 1
+        ])->get('/agent/analytics');
+
+        $response->assertStatus(200);
+        $response->assertSee('Sales & Commission Analytics');
+        $response->assertSee('Earned Commission');
+
+        // 2. Test Clients view
+        $response = $this->withSession([
+            'agent_user_id' => 2,
+            'agent_user_name' => 'Sheikh Sadi',
+            'agent_id' => 1
+        ])->get('/agent/clients');
+
+        $response->assertStatus(200);
+        $response->assertSee('My Active Clients CRM');
+    }
+
+    /**
+     * Test agent calendar and availability management.
+     */
+    public function test_agent_can_manage_availability(): void
+    {
+        $sessionData = [
+            'agent_user_id' => 2,
+            'agent_user_name' => 'Sheikh Sadi',
+            'agent_id' => 1
+        ];
+
+        // 1. Clean up existing test availability if any
+        $testDate = date('Y-m-d', strtotime('+3 days'));
+        DB::delete("DELETE FROM agent_availability WHERE agentId = 1 AND TRUNC(unavailableDate) = TO_DATE(:testDate, 'YYYY-MM-DD')", ['testDate' => $testDate]);
+
+        // 2. View Calendar
+        $response = $this->withSession($sessionData)->get('/agent/calendar');
+        $response->assertStatus(200);
+        $response->assertSee('Manage Availability Calendar');
+
+        // 3. Store unavailable date
+        $response = $this->withSession($sessionData)->post('/agent/calendar/store', [
+            'unavailable_date' => $testDate,
+            'reason' => 'Test Out of Office'
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertSessionHas('success');
+
+        // Verify database entry exists
+        $block = DB::select("SELECT id FROM agent_availability WHERE agentId = 1 AND TRUNC(unavailableDate) = TO_DATE(:testDate, 'YYYY-MM-DD')", ['testDate' => $testDate]);
+        $this->assertNotEmpty($block);
+        $blockId = $block[0]->id;
+
+        // 4. Try storing duplicate date (should fail)
+        $responseDuplicate = $this->withSession($sessionData)->post('/agent/calendar/store', [
+            'unavailable_date' => $testDate,
+            'reason' => 'Test Out of Office Duplicate'
+        ]);
+        $responseDuplicate->assertStatus(302);
+        $responseDuplicate->assertSessionHas('error');
+
+        // 5. Delete unavailable date
+        $responseDelete = $this->withSession($sessionData)->delete("/agent/calendar/{$blockId}/delete");
+        $responseDelete->assertStatus(302);
+        $responseDelete->assertSessionHas('success');
+
+        // Verify database entry deleted
+        $blockCheck = DB::select("SELECT id FROM agent_availability WHERE id = :id", ['id' => $blockId]);
+        $this->assertEmpty($blockCheck);
+    }
+
+    /**
+     * Test buyer booking fails when agent is marked unavailable.
+     */
+    public function test_booking_fails_when_agent_is_unavailable(): void
+    {
+        // 1. Seed agent unavailability for tomorrow
+        $blockDate = date('Y-m-d', strtotime('+1 day'));
+        DB::delete("DELETE FROM agent_availability WHERE agentId = 1 AND TRUNC(unavailableDate) = TO_DATE(:blockDate, 'YYYY-MM-DD')", ['blockDate' => $blockDate]);
+        
+        DB::insert("
+            INSERT INTO agent_availability (id, agentId, unavailableDate, reason)
+            VALUES ((SELECT NVL(MAX(id), 0) + 1 FROM agent_availability), 1, TO_DATE(:blockDate, 'YYYY-MM-DD'), 'Test Vacation')
+        ", ['blockDate' => $blockDate]);
+
+        // 2. Try to book a site visit on the blocked date as a buyer
+        $response = $this->withSession([
+            'buyer_user_id' => 4,
+            'buyer_user_name' => 'Abdur Rahim',
+        ])->post('/buyer/bookings/store', [
+            'property_id' => 1, // Seeded property represented by agent ID 1 (Sheikh Sadi)
+            'booking_type' => 'visit',
+            'visit_date' => $blockDate,
+            'visit_slot' => '10:00 AM - 11:00 AM',
+            'guests' => 2,
+            'notes' => 'Testing agent block'
+        ]);
+
+        // Assert it is blocked and redirects back with error
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
+        $this->assertStringContainsString('The representing agent is unavailable', session('error'));
+
+        // 3. Cleanup availability block
+        DB::delete("DELETE FROM agent_availability WHERE agentId = 1 AND TRUNC(unavailableDate) = TO_DATE(:blockDate, 'YYYY-MM-DD')", ['blockDate' => $blockDate]);
     }
 }

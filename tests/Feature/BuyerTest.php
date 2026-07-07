@@ -234,8 +234,8 @@ class BuyerTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/buyer/dashboard');
-        $response->assertSessionHas('buyer_user_id');
+        $response->assertRedirect('/buyer/login');
+        $response->assertSessionMissing('buyer_user_id');
 
         // Verify exists in database
         $user = DB::select("SELECT id, fullname, roleId, profileImage FROM users WHERE email = :email", ['email' => 'registertest@estatex.com']);

@@ -59,6 +59,49 @@ class BuyerBookingController extends Controller
         
         $property = $propertyData[0];
         $agentId = $property->agentid;
+
+        // Verify representative agent availability
+        if ($agentId) {
+            if ($bookingType === 'visit') {
+                $visitDateInput = $request->input('visit_date');
+                if ($visitDateInput) {
+                    $agentBlock = DB::select("
+                        SELECT reason FROM agent_availability 
+                        WHERE agentId = :agentId 
+                          AND TRUNC(unavailableDate) = TO_DATE(:visitDate, 'YYYY-MM-DD')
+                    ", [
+                        'agentId' => $agentId,
+                        'visitDate' => date('Y-m-d', strtotime($visitDateInput))
+                    ]);
+                    if (!empty($agentBlock)) {
+                        $reason = $agentBlock[0]->reason ? " (" . $agentBlock[0]->reason . ")" : "";
+                        return back()->with('error', 'The representing agent is unavailable on ' . date('Y-m-d', strtotime($visitDateInput)) . $reason . '. Please choose another date.')->withInput();
+                    }
+                }
+            } else {
+                $startDateInput = $request->input('start_date');
+                $endDateInput = $request->input('end_date');
+                if ($startDateInput && $endDateInput) {
+                    $startDate = date('Y-m-d', strtotime($startDateInput));
+                    $endDate = date('Y-m-d', strtotime($endDateInput));
+                    $agentBlock = DB::select("
+                        SELECT TRUNC(unavailableDate) as block_date, reason FROM agent_availability 
+                        WHERE agentId = :agentId 
+                          AND TRUNC(unavailableDate) BETWEEN TO_DATE(:startDate, 'YYYY-MM-DD') AND TO_DATE(:endDate, 'YYYY-MM-DD')
+                        ORDER BY unavailableDate ASC
+                    ", [
+                        'agentId' => $agentId,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate
+                    ]);
+                    if (!empty($agentBlock)) {
+                        $reason = $agentBlock[0]->reason ? " (" . $agentBlock[0]->reason . ")" : "";
+                        $blockDateFormatted = date('Y-m-d', strtotime($agentBlock[0]->block_date));
+                        return back()->with('error', 'The representing agent is unavailable on ' . $blockDateFormatted . $reason . ' during your reservation range. Please choose other dates.')->withInput();
+                    }
+                }
+            }
+        }
         
         // Calculate total amount (1% booking fee for unit reservations)
         $totalAmount = 0.00;

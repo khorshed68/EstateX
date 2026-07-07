@@ -130,14 +130,7 @@ class OwnerAuthController extends Controller
                 'profileImage' => $profileImagePath
             ]);
 
-            // Set session variables to log them in automatically
-            session([
-                'owner_user_id' => $nextId,
-                'owner_user_name' => $request->input('fullname'),
-                'owner_user_image' => $profileImagePath,
-            ]);
-
-            return redirect()->route('owner.dashboard')->with('success', 'Your owner account has been created successfully!');
+            return redirect()->route('owner.login')->with('success', 'Your owner account has been created successfully! Please sign in.');
         } catch (\Exception $e) {
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
         }

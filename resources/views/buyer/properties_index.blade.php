@@ -2,8 +2,73 @@
 
 @section('page_title', 'Real Estate Marketplace')
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    /* Custom Leaflet Dark Theme Overrides */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+        background: #0d111a !important; /* Matches main dark theme */
+        border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        border-radius: 16px !important;
+        color: #f1f5f9 !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    }
+    .leaflet-popup-close-button {
+        color: #94a3b8 !important;
+        padding: 8px 8px 0 0 !important;
+    }
+    .water-wave-btn {
+        position: relative;
+        overflow: hidden;
+    }
+    .water-ripple-wave {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35); /* Translucent water wave color */
+        width: 250px;
+        height: 250px;
+        transform: translate(-50%, -50%) scale(0);
+        pointer-events: none;
+        animation: rippleAnimation 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes rippleAnimation {
+        0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+    }
+    /* Global water wave cursor effect */
+    .global-water-ripple {
+        position: absolute;
+        border-radius: 50%;
+        border: 1.5px solid rgba(16, 185, 129, 0.3); /* Translucent emerald wave border */
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 80%);
+        pointer-events: none;
+        width: 80px;
+        height: 80px;
+        transform: translate(-50%, -50%) scale(0);
+        z-index: 50;
+        animation: globalRippleAnimation 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes globalRippleAnimation {
+        0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0.9;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="space-y-6">
+<div id="marketplace-container" class="space-y-6 relative overflow-hidden">
 
     <!-- Premium Filters Card -->
     <div class="glass-panel p-6 rounded-3xl">
@@ -77,9 +142,9 @@
 
             <!-- Advanced Filters Toggle -->
             <div class="md:col-span-12 flex justify-start mt-2">
-                <button type="button" onclick="toggleAdvancedFilters()" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition duration-200 flex items-center gap-1.5 focus:outline-none">
-                    <i id="advanced-chevron" class="fa-solid fa-chevron-down text-[10px]"></i>
-                    <span>Advanced Specifications Filters</span>
+                <button type="button" onclick="toggleAdvancedFilters()" class="water-wave-btn relative overflow-hidden px-4 py-2 border border-emerald-500/20 hover:border-emerald-500/50 bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl text-xs font-bold text-emerald-400 transition duration-300 flex items-center gap-1.5 focus:outline-none">
+                    <i id="advanced-chevron" class="fa-solid fa-chevron-down text-[10px] relative z-10"></i>
+                    <span class="relative z-10">Advanced Specifications Filters</span>
                 </button>
             </div>
 
@@ -169,16 +234,34 @@
                         Clear Filters
                     </a>
                 @endif
-                <button type="submit" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold text-white transition duration-200 shadow-md shadow-emerald-600/10">
-                    Apply Filters
+                <button type="submit" class="water-wave-btn relative overflow-hidden px-6 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold text-white transition duration-300 shadow-md shadow-emerald-600/10">
+                    <span class="relative z-10">Apply Filters</span>
                 </button>
             </div>
 
         </form>
     </div>
 
-    <!-- Properties Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- View Switcher -->
+    <div class="flex justify-between items-center bg-slate-900/40 p-4 rounded-3xl border border-slate-900/50">
+        <div>
+            <h4 class="font-outfit font-bold text-sm text-slate-200">Available Listings</h4>
+            <p class="text-[10px] text-slate-500">Showing {{ count($properties) }} active properties</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="switchView('list')" id="btn-list-view" class="px-3.5 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none">
+                <i class="fa-solid fa-list-ul"></i>
+                <span>List View</span>
+            </button>
+            <button type="button" onclick="switchView('map')" id="btn-map-view" class="px-3.5 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900 text-slate-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span>Map Search</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Properties List View -->
+    <div id="properties-list-view" class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @forelse($properties as $prop)
             <div class="glass-panel rounded-3xl overflow-hidden group flex flex-col justify-between hover:border-slate-700 transition duration-300">
                 <div>
@@ -256,6 +339,11 @@
             </div>
         @endforelse
     </div>
+
+    <!-- Map View Container (hidden by default) -->
+    <div id="properties-map-view" class="hidden glass-panel p-4 rounded-3xl space-y-4">
+        <div id="properties-map" class="w-full h-[550px] rounded-2xl overflow-hidden border border-slate-800/80 z-10"></div>
+    </div>
 </div>
 @endsection
 
@@ -278,12 +366,142 @@
         }
     }
     
+    let mapInitialized = false;
+    let leafletMap = null;
+
+    function switchView(view) {
+        const listView = document.getElementById('properties-list-view');
+        const mapView = document.getElementById('properties-map-view');
+        const btnList = document.getElementById('btn-list-view');
+        const btnMap = document.getElementById('btn-map-view');
+        
+        if (!listView || !mapView) return;
+        
+        if (view === 'list') {
+            listView.classList.remove('hidden');
+            listView.classList.add('grid');
+            mapView.classList.add('hidden');
+            
+            if (btnList && btnMap) {
+                btnList.className = "px-3.5 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none";
+                btnMap.className = "px-3.5 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900 text-slate-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none";
+            }
+        } else {
+            listView.classList.add('hidden');
+            listView.classList.remove('grid');
+            mapView.classList.remove('hidden');
+            
+            if (btnList && btnMap) {
+                btnList.className = "px-3.5 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900 text-slate-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none";
+                btnMap.className = "px-3.5 py-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-bold transition duration-200 flex items-center gap-1.5 focus:outline-none";
+            }
+            
+            // Lazy load and initialize Leaflet
+            if (!mapInitialized) {
+                // Dynamically import Leaflet JS if not already loaded
+                if (typeof L === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+                    script.onload = () => {
+                        initPropertiesMap();
+                        setTimeout(() => {
+                            if (leafletMap) leafletMap.invalidateSize();
+                        }, 250);
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    initPropertiesMap();
+                    setTimeout(() => {
+                        if (leafletMap) leafletMap.invalidateSize();
+                    }, 250);
+                }
+            } else if (leafletMap) {
+                setTimeout(() => {
+                    leafletMap.invalidateSize();
+                }, 250);
+            }
+        }
+    }
+
+    function initPropertiesMap() {
+        const properties = @json($properties);
+        
+        let centerLat = 22.8456;
+        let centerLng = 89.5403;
+        
+        // Find first location to center on
+        for (let prop of properties) {
+            if (prop.latitude && prop.longitude) {
+                centerLat = parseFloat(prop.latitude);
+                centerLng = parseFloat(prop.longitude);
+                break;
+            }
+        }
+        
+        // Initialize Leaflet Map
+        leafletMap = L.map('properties-map').setView([centerLat, centerLng], 13);
+        
+        // Add standard bright, highly readable tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(leafletMap);
+        
+        // Add markers
+        properties.forEach(prop => {
+            if (prop.latitude && prop.longitude) {
+                const marker = L.marker([parseFloat(prop.latitude), parseFloat(prop.longitude)]).addTo(leafletMap);
+                
+                const mainImg = prop.main_image ? (prop.main_image.startsWith('/') ? prop.main_image : '/' + prop.main_image) : 'https://placehold.co/600x400/0f172a/e2e8f0?text=Property';
+                const detailsUrl = `/buyer/properties/${prop.id}`;
+                const formattedPrice = Number(prop.price).toLocaleString();
+                
+                const popupContent = `
+                    <div class="w-48 text-slate-200 p-1">
+                        <img src="${mainImg}" class="w-full h-24 object-cover rounded-xl mb-2 border border-slate-800">
+                        <h4 class="font-bold font-outfit text-xs text-white line-clamp-1">${prop.title}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-emerald-500"></i> ${prop.areaname}
+                        </p>
+                        <div class="flex justify-between items-center mt-2.5 pt-2 border-t border-slate-900">
+                            <span class="text-emerald-400 font-bold text-xs">৳${formattedPrice}</span>
+                            <a href="${detailsUrl}" class="text-[10px] font-bold text-white bg-emerald-600 px-2.5 py-1 rounded-lg hover:bg-emerald-500 transition duration-150">Details</a>
+                        </div>
+                    </div>
+                `;
+                marker.bindPopup(popupContent);
+            }
+        });
+        
+        mapInitialized = true;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Automatically open the drawer if any advanced filters are active
         const hasAdvancedFilters = {{ ($bedrooms || $bathrooms || $minArea || $maxArea || $furnishedStatus || $parking || $balcony || $lift || $swimmingPool || $petFriendly) ? 'true' : 'false' }};
         if (hasAdvancedFilters) {
             toggleAdvancedFilters(true);
         }
+
+        // Water wave cursor ripple effect for buttons
+        document.querySelectorAll('.water-wave-btn').forEach(btn => {
+            btn.addEventListener('mousemove', function(e) {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const ripple = document.createElement('span');
+                ripple.className = 'water-ripple-wave';
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                btn.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
     });
 </script>
 @endsection

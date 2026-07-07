@@ -89,8 +89,8 @@ class OwnerTest extends TestCase
         ]);
 
         $response->assertStatus(302);
-        $response->assertRedirect('/owner/dashboard');
-        $response->assertSessionHas('owner_user_id');
+        $response->assertRedirect('/owner/login');
+        $response->assertSessionMissing('owner_user_id');
 
         // Check exists in DB
         $user = DB::select("SELECT id, profileImage FROM users WHERE email = 'ownertest@estatex.com'");

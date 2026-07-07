@@ -166,15 +166,7 @@ class AgentAuthController extends Controller
 
             DB::commit();
 
-            // Set session variables to log them in automatically
-            session([
-                'agent_user_id' => $nextUserId,
-                'agent_user_name' => $request->input('fullname'),
-                'agent_id' => $nextAgentId,
-                'agent_user_image' => $profileImagePath,
-            ]);
-
-            return redirect()->route('agent.dashboard')->with('success', 'Your agent account has been created successfully!');
+            return redirect()->route('agent.login')->with('success', 'Your agent account has been created successfully! Please sign in.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();

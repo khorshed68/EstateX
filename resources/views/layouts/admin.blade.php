@@ -149,5 +149,6 @@
     </main>
 
     @yield('scripts')
+    @include('layouts.water_wave')
 </body>
 </html>

@@ -205,5 +205,6 @@
         <span class="text-xs text-slate-600 font-medium">EstateX Platform &copy; 2026. Powered by raw SQL & Oracle Database.</span>
     </footer>
 
+    @include('layouts.water_wave')
 </body>
 </html>

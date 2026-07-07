@@ -81,6 +81,18 @@
                     <i class="fa-solid fa-star text-lg w-5"></i>
                     <span class="font-medium text-sm">My Reviews</span>
                 </a>
+                <a href="{{ route('agent.analytics') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/50 transition duration-200 {{ Route::is('agent.analytics') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-chart-line text-lg w-5"></i>
+                    <span class="font-medium text-sm">Sales & Commissions</span>
+                </a>
+                <a href="{{ route('agent.clients') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/50 transition duration-200 {{ Route::is('agent.clients') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-users text-lg w-5"></i>
+                    <span class="font-medium text-sm">My Clients CRM</span>
+                </a>
+                <a href="{{ route('agent.calendar') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/50 transition duration-200 {{ Route::is('agent.calendar') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-calendar-days text-lg w-5"></i>
+                    <span class="font-medium text-sm">Availability Calendar</span>
+                </a>
                 <a href="{{ route('agent.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900/50 transition duration-200 {{ Route::is('agent.profile') ? 'sidebar-link-active' : '' }}">
                     <i class="fa-solid fa-user-gear text-lg w-5"></i>
                     <span class="font-medium text-sm">Profile Details</span>
@@ -148,5 +160,6 @@
     </main>
 
     @yield('scripts')
+    @include('layouts.water_wave')
 </body>
 </html>

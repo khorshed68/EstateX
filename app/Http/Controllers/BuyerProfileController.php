@@ -4,48 +4,46 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
-class AgentProfileController extends Controller
+class BuyerProfileController extends Controller
 {
     /**
-     * Show the agent profile edit page.
+     * Show the buyer profile edit page.
      */
     public function index()
     {
-        $userId = session('agent_user_id');
+        $userId = session('buyer_user_id');
 
         $profiles = DB::select("
-            SELECT u.fullname, u.email, u.phone, u.profileImage, a.agencyName, a.licenseNo, a.experienceYears, a.about
-            FROM users u
-            JOIN agents a ON u.id = a.userId
-            WHERE u.id = :userId
+            SELECT id, fullname, email, phone, profileImage, password
+            FROM users
+            WHERE id = :userId AND roleId = 3
         ", ['userId' => $userId]);
 
         if (empty($profiles)) {
-            return redirect()->route('agent.dashboard')->with('error', 'Profile not found.');
+            return redirect()->route('buyer.dashboard')->with('error', 'Profile not found.');
         }
 
         $profile = $profiles[0];
 
-        return view('agent.profile', compact('profile'));
+        return view('buyer.profile', compact('profile'));
     }
 
     /**
-     * Update the agent profile details.
+     * Update the buyer profile details.
      */
     public function update(Request $request)
     {
-        $userId = session('agent_user_id');
+        $userId = session('buyer_user_id');
 
         $request->validate([
             'fullname' => 'required|string|max:255',
             'phone' => 'nullable|string|max:50',
             'email' => 'required|email|max:255',
-            'agency_name' => 'nullable|string|max:255',
-            'license_no' => 'required|string|max:100',
-            'experience_years' => 'required|integer|min:0',
-            'about' => 'nullable|string|max:1000',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'current_password' => 'nullable|required_with:new_password|string',
+            'new_password' => 'nullable|string|min:6|confirmed',
         ]);
 
         $email = $request->input('email');
@@ -75,18 +73,25 @@ class AgentProfileController extends Controller
                 'userId' => $userId
             ]);
 
-            // Update agent details
-            DB::update("
-                UPDATE agents 
-                SET agencyName = :agencyName, licenseNo = :licenseNo, experienceYears = :experienceYears, about = :about, updatedAt = CURRENT_TIMESTAMP 
-                WHERE userId = :userId
-            ", [
-                'agencyName' => $request->input('agency_name'),
-                'licenseNo' => $request->input('license_no'),
-                'experienceYears' => $request->input('experience_years'),
-                'about' => $request->input('about'),
-                'userId' => $userId
-            ]);
+            // Handle Password Change
+            if ($request->filled('new_password')) {
+                // Fetch existing password hash
+                $userResult = DB::select("SELECT password FROM users WHERE id = :userId", ['userId' => $userId]);
+                $dbPassword = $userResult[0]->password;
+
+                if (!Hash::check($request->input('current_password'), $dbPassword)) {
+                    return back()->withErrors(['current_password' => 'Your current password is incorrect.'])->withInput();
+                }
+
+                DB::update("
+                    UPDATE users 
+                    SET password = :password 
+                    WHERE id = :userId
+                ", [
+                    'password' => Hash::make($request->input('new_password')),
+                    'userId' => $userId
+                ]);
+            }
 
             // Handle Profile Image Upload
             if ($request->hasFile('profile_image')) {
@@ -118,15 +123,15 @@ class AgentProfileController extends Controller
                 ", ['profileImage' => $profileImagePath, 'userId' => $userId]);
                 
                 // Update session
-                session(['agent_user_image' => '/' . $profileImagePath]);
+                session(['buyer_user_image' => '/' . $profileImagePath]);
             }
 
             DB::commit();
 
             // Update session values
-            session(['agent_user_name' => $request->input('fullname')]);
+            session(['buyer_user_name' => $request->input('fullname')]);
 
-            return redirect()->route('agent.profile')->with('success', 'Profile updated successfully.');
+            return redirect()->route('buyer.profile')->with('success', 'Profile updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Profile update failed: ' . $e->getMessage())->withInput();

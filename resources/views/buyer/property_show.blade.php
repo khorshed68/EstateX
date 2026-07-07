@@ -2,6 +2,22 @@
 
 @section('page_title', 'Property Inventory Details')
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    /* Custom Leaflet Dark Theme Overrides */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+        background: #0d111a !important;
+        border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        border-radius: 16px !important;
+        color: #f1f5f9 !important;
+    }
+    .leaflet-popup-close-button {
+        color: #94a3b8 !important;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="space-y-6">
     <!-- Back to Catalog Link -->
@@ -138,6 +154,28 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Location & Nearby Landmarks Section -->
+            @if($property->latitude && $property->longitude)
+                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Property Location & Landmarks</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                        <!-- Left: Leaflet Map -->
+                        <div class="md:col-span-8">
+                            <div id="property-detail-map" class="w-full h-72 rounded-2xl overflow-hidden border border-slate-800/80 z-10"></div>
+                        </div>
+
+                        <!-- Right: Nearby Landmarks List -->
+                        <div class="md:col-span-4 space-y-4">
+                            <h5 class="text-xs font-bold text-slate-200">Nearby Landmarks</h5>
+                            <div id="landmarks-list" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                                <!-- Generated Dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <!-- Customer Reviews Section -->
             <div class="glass-panel p-6 rounded-3xl space-y-4">
@@ -382,6 +420,118 @@
                 endDateInput.min = this.value;
             });
         }
+
+        // Initialize Property Detail Map and Landmarks
+        initPropertyDetailMap();
     });
+
+    function initPropertyDetailMap() {
+        const propLat = {{ $property->latitude ?? 'null' }};
+        const propLng = {{ $property->longitude ?? 'null' }};
+        
+        if (!propLat || !propLng) return;
+
+        // Import Leaflet dynamically by appending script if not already present
+        if (typeof L === 'undefined') {
+            const script = document.createElement('script');
+            script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+            script.onload = () => setupMap(propLat, propLng);
+            document.head.appendChild(script);
+        } else {
+            setupMap(propLat, propLng);
+        }
+    }
+
+    function setupMap(lat, lng) {
+        const map = L.map('property-detail-map').setView([lat, lng], 14);
+        
+        // Add standard readable tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Add main property marker
+        const propertyMarker = L.marker([lat, lng]).addTo(map);
+        propertyMarker.bindPopup('<b class="text-white text-xs font-outfit">{{ $property->title }}</b><br><span class="text-slate-400 text-[10px]">Property Location</span>').openPopup();
+
+        // Calculate distances for landmarks and display/plot them
+        const landmarkTemplates = [
+            { name: "KUET Academic Building", type: "education", lat: 22.9015, lng: 89.5020, icon: "fa-graduation-cap", color: "#60a5fa" },
+            { name: "Khulna City Medical College", type: "healthcare", lat: 22.8210, lng: 89.5535, icon: "fa-hospital", color: "#f87171" },
+            { name: "Sonadanga Bus Terminal", type: "transit", lat: 22.8192, lng: 89.5420, icon: "fa-bus", color: "#fbbf24" },
+            { name: "KUET Central Mosque", type: "landmark", lat: 22.9000, lng: 89.5030, icon: "fa-mosque", color: "#34d399" },
+            { name: "New Market Khulna", type: "shopping", lat: 22.8250, lng: 89.5500, icon: "fa-bag-shopping", color: "#a78bfa" },
+            { name: "Khulna University", type: "education", lat: 22.8020, lng: 89.5350, icon: "fa-school", color: "#60a5fa" },
+            { name: "Abu Naser Hospital", type: "healthcare", lat: 22.8480, lng: 89.5300, icon: "fa-user-nurse", color: "#f87171" },
+            { name: "Rupsha Bridge viewpoint", type: "scenic", lat: 22.7950, lng: 89.5850, icon: "fa-bridge", color: "#22d3ee" }
+        ];
+
+        const listContainer = document.getElementById('landmarks-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+
+        // Compute distances and sort
+        const calculatedLandmarks = landmarkTemplates.map(lm => {
+            const distance = calculateDistance(lat, lng, lm.lat, lm.lng);
+            return { ...lm, distance };
+        }).sort((a, b) => a.distance - b.distance);
+
+        // Render closest landmarks
+        calculatedLandmarks.forEach(lm => {
+            const distStr = lm.distance.toFixed(1) + ' km';
+            
+            // Travel times estimation (Assume 40 km/h drive, 5 km/h walk)
+            const walkTime = Math.round((lm.distance / 5) * 60);
+            const driveTime = Math.max(1, Math.round((lm.distance / 40) * 60));
+            const timeDesc = walkTime < 25 ? `${walkTime}m walk` : `${driveTime}m drive`;
+
+            // Append to DOM list
+            const lmItem = document.createElement('div');
+            lmItem.className = 'flex items-start gap-2.5 p-2 rounded-xl bg-slate-950/40 border border-slate-900/60 hover:bg-slate-900/40 transition duration-150';
+            lmItem.innerHTML = `
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs shrink-0" style="background-color: ${lm.color}15; border: 1px solid ${lm.color}30; color: ${lm.color}">
+                    <i class="fa-solid ${lm.icon}"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span class="font-bold text-[11px] text-slate-200 block line-clamp-1">${lm.name}</span>
+                    <span class="text-[9px] text-slate-500 uppercase font-semibold">${lm.type}</span>
+                </div>
+                <div class="text-right shrink-0">
+                    <span class="text-[11px] font-bold text-slate-300 block">${distStr}</span>
+                    <span class="text-[9px] text-emerald-400 font-medium block">${timeDesc}</span>
+                </div>
+            `;
+            listContainer.appendChild(lmItem);
+
+            // Plot circle markers for landmarks
+            L.circleMarker([lm.lat, lm.lng], {
+                radius: 6,
+                fillColor: lm.color,
+                color: '#fff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map)
+              .bindPopup(`<b style="color: ${lm.color}">${lm.name}</b><br><span style="font-size: 10px; color: #94a3b8">${lm.type.toUpperCase()} &bull; ${distStr} away</span>`);
+        });
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of earth in km
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180);
+    }
 </script>
 @endsection

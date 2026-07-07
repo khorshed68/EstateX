@@ -78,6 +78,10 @@
                     <i class="fa-solid fa-calendar-check text-lg w-5"></i>
                     <span class="font-medium text-sm">My Bookings</span>
                 </a>
+                <a href="{{ route('buyer.profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition duration-200 {{ Route::is('buyer.profile') ? 'sidebar-link-active' : '' }}">
+                    <i class="fa-solid fa-user-gear text-lg w-5"></i>
+                    <span class="font-medium text-sm">Profile Details</span>
+                </a>
             </nav>
         </div>
 
@@ -148,5 +152,6 @@
     </main>
 
     @yield('scripts')
+    @include('layouts.water_wave')
 </body>
 </html>
