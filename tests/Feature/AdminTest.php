@@ -257,4 +257,71 @@ class AdminTest extends TestCase
         $deleted = \Illuminate\Support\Facades\DB::select("SELECT id FROM users WHERE id = :id", ['id' => $tempUserId]);
         $this->assertEmpty($deleted);
     }
+
+    /**
+     * Test admin can create user accounts.
+     */
+    public function test_admin_can_create_user_account(): void
+    {
+        $testEmail = 'newtestuser@estatex.com';
+        \Illuminate\Support\Facades\DB::delete("DELETE FROM agents WHERE userId IN (SELECT id FROM users WHERE email = :email)", ['email' => $testEmail]);
+        \Illuminate\Support\Facades\DB::delete("DELETE FROM users WHERE email = :email", ['email' => $testEmail]);
+
+        $response = $this->withSession([
+            'admin_user_id' => 1,
+            'admin_user_name' => 'System Admin'
+        ])->post('/admin/users/store', [
+            'fullname' => 'Admin Created User',
+            'email' => $testEmail,
+            'password' => 'secret123',
+            'phone' => '01711122233',
+            'role_id' => 2 // Create an Agent
+        ]);
+
+        $response->assertStatus(302);
+        
+        $user = \Illuminate\Support\Facades\DB::select("SELECT id, fullname, roleId FROM users WHERE email = :email", ['email' => $testEmail]);
+        $this->assertNotEmpty($user);
+        $this->assertEquals(2, $user[0]->roleid);
+
+        $agent = \Illuminate\Support\Facades\DB::select("SELECT id FROM agents WHERE userId = :userId", ['userId' => $user[0]->id]);
+        $this->assertNotEmpty($agent);
+
+        // Cleanup
+        \Illuminate\Support\Facades\DB::delete("DELETE FROM agents WHERE userId = :userId", ['userId' => $user[0]->id]);
+        \Illuminate\Support\Facades\DB::delete("DELETE FROM users WHERE id = :userId", ['userId' => $user[0]->id]);
+    }
+
+    /**
+     * Test admin can update property status.
+     */
+    public function test_admin_can_update_property_status(): void
+    {
+        // Fetch first property
+        $props = \Illuminate\Support\Facades\DB::select("SELECT id, status FROM properties WHERE ROWNUM = 1");
+        if (empty($props)) {
+            $this->markTestSkipped('No properties found to update.');
+        }
+
+        $propertyId = $props[0]->id;
+        $originalStatus = $props[0]->status;
+
+        $response = $this->withSession([
+            'admin_user_id' => 1,
+            'admin_user_name' => 'System Admin'
+        ])->post("/admin/properties/{$propertyId}/status", [
+            'status' => 'pending'
+        ]);
+
+        $response->assertStatus(302);
+
+        $updated = \Illuminate\Support\Facades\DB::select("SELECT status FROM properties WHERE id = :id", ['id' => $propertyId]);
+        $this->assertEquals('pending', $updated[0]->status);
+
+        // Revert
+        \Illuminate\Support\Facades\DB::update("UPDATE properties SET status = :status WHERE id = :id", [
+            'status' => $originalStatus,
+            'id' => $propertyId
+        ]);
+    }
 }

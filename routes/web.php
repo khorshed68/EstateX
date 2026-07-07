@@ -22,6 +22,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     
     // User Management
     Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users');
+    Route::post('/users/store', [AdminUserController::class, 'store'])->name('admin.users.store');
     Route::post('/users/suspend/{id}', [AdminUserController::class, 'suspend'])->name('admin.users.suspend');
     Route::post('/users/activate/{id}', [AdminUserController::class, 'activate'])->name('admin.users.activate');
     Route::delete('/users/delete/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.delete');
@@ -32,6 +33,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     
     // Property Listings
     Route::get('/properties', [AdminPropertyController::class, 'index'])->name('admin.properties');
+    Route::post('/properties/{id}/status', [AdminPropertyController::class, 'updateStatus'])->name('admin.properties.status');
     Route::delete('/properties/delete/{id}', [AdminPropertyController::class, 'destroy'])->name('admin.properties.delete');
 
     // Bookings & Visits log

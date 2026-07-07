@@ -73,25 +73,27 @@
                                 @endif
                             </td>
                             <td class="p-4">
-                                <span class="flex items-center gap-1.5 font-semibold 
-                                    @if($prop->status === 'available') text-green-400 
-                                    @elseif($prop->status === 'booked') text-yellow-400 
-                                    @else text-red-400 @endif">
-                                    <span class="w-1.5 h-1.5 rounded-full 
-                                        @if($prop->status === 'available') bg-green-400 
-                                        @elseif($prop->status === 'booked') bg-yellow-400 
-                                        @else bg-red-400 @endif"></span>
-                                    {{ ucfirst($prop->status) }}
-                                </span>
+                                <form action="{{ route('admin.properties.status', $prop->id) }}" method="POST">
+                                    @csrf
+                                    <select name="status" onchange="this.form.submit()" 
+                                            class="bg-slate-950 border border-slate-800 rounded-lg py-1 px-2.5 text-[11px] font-medium text-slate-300 focus:outline-none focus:border-blue-500 cursor-pointer">
+                                        <option value="available" {{ $prop->status === 'available' ? 'selected' : '' }}>Available</option>
+                                        <option value="pending" {{ $prop->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="booked" {{ $prop->status === 'booked' ? 'selected' : '' }}>Booked</option>
+                                        <option value="sold" {{ $prop->status === 'sold' ? 'selected' : '' }}>Sold</option>
+                                    </select>
+                                </form>
                             </td>
                             <td class="p-4 text-center">
-                                <form action="{{ route('admin.properties.delete', $prop->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete listing #{{ $prop->id }}? This will fire PL/SQL cascade constraints and write to the audit trail.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg text-red-400 hover:text-red-300 font-bold transition duration-200">
-                                        <i class="fa-solid fa-trash-can mr-1"></i> Delete
-                                    </button>
-                                </form>
+                                <div class="flex items-center justify-center gap-2">
+                                    <form action="{{ route('admin.properties.delete', $prop->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete listing #{{ $prop->id }}? This will fire PL/SQL cascade constraints and write to the audit trail.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg text-red-400 hover:text-red-300 font-bold transition duration-200">
+                                            <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

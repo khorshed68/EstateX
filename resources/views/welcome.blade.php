@@ -60,9 +60,9 @@
         
         <!-- Hero Introduction -->
         <div class="text-center mb-12 max-w-2xl">
-            <h1 class="font-outfit font-black text-4xl md:text-5xl text-white tracking-tight leading-tight mb-4">
-                Premium Real Estate <br>
-                <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-blue-500 bg-clip-text text-transparent glowing-hero">Database Platform</span>
+            <h1 class="font-outfit font-black text-3xl md:text-4xl text-white tracking-tight leading-tight mb-4">
+                Real Estate Property Management System, <br>
+                <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-blue-500 bg-clip-text text-transparent glowing-hero">Marketplace & Analytics Platform</span>
             </h1>
             <p class="text-slate-400 text-sm md:text-base leading-relaxed">
                 Choose your portal below to sign in or create an account. All platforms leverage raw SQL queries communicating with Oracle.

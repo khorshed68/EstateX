@@ -67,4 +67,49 @@ class AdminPropertyController extends Controller
             return back()->with('error', 'Error executing delete procedure: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Update property listing status.
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:available,pending,booked,sold'
+        ]);
+
+        $status = $request->input('status');
+        $adminId = session('admin_user_id');
+
+        $oldProp = DB::select("SELECT status FROM properties WHERE id = :id", ['id' => $id]);
+        if (empty($oldProp)) {
+            return back()->with('error', 'Property listing not found.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            DB::update("
+                UPDATE properties 
+                SET status = :status, updatedAt = CURRENT_TIMESTAMP 
+                WHERE id = :id
+            ", ['status' => $status, 'id' => $id]);
+
+            // Log administrative action
+            DB::insert("
+                INSERT INTO admin_audit_logs (adminUserId, actionName, tableName, recordId, oldValues, newValues) 
+                VALUES (:adminId, 'PROPERTY_STATUS_UPDATE', 'PROPERTIES', :recordId, :oldValues, :newValues)
+            ", [
+                'adminId' => $adminId,
+                'recordId' => $id,
+                'oldValues' => 'Status: ' . $oldProp[0]->status,
+                'newValues' => 'Status: ' . $status
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Property listing status updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update property status: ' . $e->getMessage());
+        }
+    }
 }

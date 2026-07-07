@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminUserController extends Controller
 {
@@ -206,6 +207,81 @@ class AdminUserController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update agent profile: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Store a newly created user account.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:6',
+            'phone' => 'nullable|string|max:50',
+            'role_id' => 'required|integer|in:1,2,3',
+        ]);
+
+        $email = $request->input('email');
+        $adminId = session('admin_user_id');
+
+        // Check if email already exists
+        $existing = DB::select("SELECT id FROM users WHERE email = :email", ['email' => $email]);
+        if (!empty($existing)) {
+            return back()->withErrors(['email' => 'This email address is already registered.'])->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Generate user ID
+            $nextUserIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
+            $newUserId = $nextUserIdResult[0]->next_id;
+
+            // Insert into users
+            DB::insert("
+                INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status)
+                VALUES (:id, :roleId, :fullname, :email, :password, :phone, NULL, 'active')
+            ", [
+                'id' => $newUserId,
+                'roleId' => $request->input('role_id'),
+                'fullname' => $request->input('fullname'),
+                'email' => $email,
+                'password' => Hash::make($request->input('password')),
+                'phone' => $request->input('phone'),
+            ]);
+
+            // If Agent role, initialize agent record
+            if ($request->input('role_id') == 2) {
+                $nextAgentIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM agents");
+                $newAgentId = $nextAgentIdResult[0]->next_id;
+
+                DB::insert("
+                    INSERT INTO agents (id, userId, agencyName, licenseNo, experienceYears, about, rating)
+                    VALUES (:id, :userId, 'Independent Agency', :licenseNo, 0, 'Platform agent account.', 5.00)
+                ", [
+                    'id' => $newAgentId,
+                    'userId' => $newUserId,
+                    'licenseNo' => 'LIC-' . rand(1000, 9999),
+                ]);
+            }
+
+            // Log administrative action
+            DB::insert("
+                INSERT INTO admin_audit_logs (adminUserId, actionName, tableName, recordId, oldValues, newValues)
+                VALUES (:adminId, 'USER_CREATE', 'USERS', :recordId, NULL, :newValues)
+            ", [
+                'adminId' => $adminId,
+                'recordId' => $newUserId,
+                'newValues' => 'Name: ' . $request->input('fullname') . ', Email: ' . $email . ', RoleId: ' . $request->input('role_id')
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'User account created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to create user account: ' . $e->getMessage())->withInput();
         }
     }
 }
