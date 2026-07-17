@@ -220,7 +220,7 @@ class AdminUserController extends Controller
             'email' => 'required|email|max:255',
             'password' => 'required|string|min:6',
             'phone' => 'nullable|string|max:50',
-            'role_id' => 'required|integer|in:1,2,3',
+            'role_id' => 'required|integer|in:1,2,3,4',
         ]);
 
         $email = $request->input('email');

@@ -29,8 +29,8 @@ class OwnerAuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Retrieve user via raw query to check role constraints (roleId = 3 for standard users who can own properties)
-        $users = DB::select("SELECT * FROM users WHERE email = :email AND roleId = 3", [
+        // Retrieve user via raw query to check role constraints (roleId = 4 for owners)
+        $users = DB::select("SELECT * FROM users WHERE email = :email AND roleId = 4", [
             'email' => $request->input('email')
         ]);
 
@@ -39,7 +39,7 @@ class OwnerAuthController extends Controller
             $countResult = DB::select("SELECT COUNT(*) AS cnt FROM users");
             if (!empty($countResult) && $countResult[0]->cnt == 0) {
                 \Illuminate\Support\Facades\Artisan::call('db:seed');
-                $users = DB::select("SELECT * FROM users WHERE email = :email AND roleId = 3", [
+                $users = DB::select("SELECT * FROM users WHERE email = :email AND roleId = 4", [
                     'email' => $request->input('email')
                 ]);
             }
@@ -117,10 +117,10 @@ class OwnerAuthController extends Controller
             $nextIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
             $nextId = $nextIdResult[0]->next_id;
 
-            // Insert new owner user (roleId = 3, status = active) using raw SQL
+            // Insert new owner user (roleId = 4, status = active) using raw SQL
             DB::insert("
                 INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status) 
-                VALUES (:id, 3, :fullname, :email, :password, :phone, :profileImage, 'active')
+                VALUES (:id, 4, :fullname, :email, :password, :phone, :profileImage, 'active')
             ", [
                 'id' => $nextId,
                 'fullname' => $request->input('fullname'),

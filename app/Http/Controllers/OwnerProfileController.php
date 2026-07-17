@@ -18,7 +18,7 @@ class OwnerProfileController extends Controller
         $profiles = DB::select("
             SELECT id, fullname, email, phone, profileImage, password
             FROM users
-            WHERE id = :userId AND roleId = 3
+            WHERE id = :userId AND roleId = 4
         ", ['userId' => $userId]);
 
         if (empty($profiles)) {

@@ -59,12 +59,14 @@
                             </td>
                             <td class="p-4 font-mono text-slate-400">{{ $user->email }}</td>
                             <td class="p-4">
-                                <span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase border
-                                    @if($user->roleName === 'admin') bg-purple-500/10 text-purple-400 border-purple-500/20
-                                    @elseif($user->roleName === 'agent') bg-blue-500/10 text-blue-400 border-blue-500/20
-                                    @else bg-green-500/10 text-green-400 border-green-500/20 @endif">
-                                    {{ $user->roleName }}
-                                </span>
+                                 <span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase border
+                                     @if($user->roleName === 'admin') bg-purple-500/10 text-purple-400 border-purple-500/20
+                                     @elseif($user->roleName === 'agent') bg-blue-500/10 text-blue-400 border-blue-500/20
+                                     @elseif($user->roleName === 'buyer') bg-green-500/10 text-green-400 border-green-500/20
+                                     @elseif($user->roleName === 'owner') bg-amber-500/10 text-amber-400 border-amber-500/20
+                                     @else bg-slate-500/10 text-slate-400 border-slate-500/20 @endif">
+                                     {{ $user->roleName }}
+                                 </span>
                             </td>
                             <td class="p-4">
                                 <span class="flex items-center gap-1.5 font-semibold 
@@ -167,12 +169,13 @@
             <!-- Role Selection -->
             <div>
                 <label for="modal_role" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Account Role</label>
-                <select id="modal_role" name="role_id" required 
-                        class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition duration-200">
-                    <option value="3">Standard User (Buyer/Owner)</option>
-                    <option value="2">Real Estate Agent</option>
-                    <option value="1">Administrator</option>
-                </select>
+                 <select id="modal_role" name="role_id" required 
+                         class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition duration-200">
+                     <option value="3">Buyer</option>
+                     <option value="4">Property Owner</option>
+                     <option value="2">Real Estate Agent</option>
+                     <option value="1">Administrator</option>
+                 </select>
             </div>
 
             <!-- Submit -->

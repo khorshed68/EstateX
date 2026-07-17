@@ -20,8 +20,8 @@ class OwnerMiddleware
             return redirect()->route('owner.login')->with('error', 'Please sign in to access your owner dashboard.');
         }
 
-        // Validate via raw query to check status and role constraints (roleId = 3 for standard users)
-        $owner = DB::select("SELECT * FROM users WHERE id = :id AND roleId = 3 AND status = 'active'", [
+        // Validate via raw query to check status and role constraints (roleId = 4 for owners)
+        $owner = DB::select("SELECT * FROM users WHERE id = :id AND roleId = 4 AND status = 'active'", [
             'id' => session('owner_user_id')
         ]);
 

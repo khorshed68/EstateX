@@ -37,13 +37,13 @@ class OwnerTest extends TestCase
     public function test_owner_login_success_with_valid_credentials(): void
     {
         $response = $this->post('/owner/login', [
-            'email' => 'rahim@estatex.com', // Seeded landlord user
+            'email' => 'karim@estatex.com', // Seeded landlord user
             'password' => 'user123',
         ]);
 
         $response->assertStatus(302);
         $response->assertRedirect('/owner/dashboard');
-        $response->assertSessionHas('owner_user_id', 4);
+        $response->assertSessionHas('owner_user_id', 5);
     }
 
     /**
@@ -62,8 +62,8 @@ class OwnerTest extends TestCase
     public function test_authenticated_owner_can_access_dashboard(): void
     {
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->get('/owner/dashboard');
 
         $response->assertStatus(200);
@@ -113,8 +113,8 @@ class OwnerTest extends TestCase
         DB::delete("DELETE FROM properties WHERE title = :title", ['title' => 'Test Automated Listing']);
 
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->post('/owner/properties/store', [
             'title' => 'Test Automated Listing',
             'prop_description' => 'Beautiful automated test property listing description.',
@@ -153,8 +153,8 @@ class OwnerTest extends TestCase
         $propId = 1;
 
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->post("/owner/properties/{$propId}/update", [
             'title' => 'Updated Test Listing Title',
             'prop_description' => 'Updated automated description text.',
@@ -211,12 +211,12 @@ class OwnerTest extends TestCase
 
         DB::insert("
             INSERT INTO properties (id, ownerId, typeId, locationId, title, price, areaSize, status) 
-            VALUES (:id, 4, 1, 1, 'Temporary Listing to Delete', 5000000, 1000, 'available')
+            VALUES (:id, 5, 1, 1, 'Temporary Listing to Delete', 5000000, 1000, 'available')
         ", ['id' => $tempId]);
 
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->delete("/owner/properties/{$tempId}/delete");
 
         $response->assertStatus(302);
@@ -233,8 +233,8 @@ class OwnerTest extends TestCase
     public function test_owner_can_access_bookings_page(): void
     {
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->get('/owner/bookings');
 
         $response->assertStatus(200);
@@ -251,7 +251,7 @@ class OwnerTest extends TestCase
             SELECT b.id 
             FROM bookings b 
             JOIN properties p ON b.propertyId = p.id 
-            WHERE p.ownerId = 4 AND ROWNUM = 1
+            WHERE p.ownerId = 5 AND ROWNUM = 1
         ");
         
         if (empty($bookings)) {
@@ -272,8 +272,8 @@ class OwnerTest extends TestCase
 
         // Post approve
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->post("/owner/bookings/{$bId}/approve");
 
         $response->assertStatus(302);
@@ -290,13 +290,13 @@ class OwnerTest extends TestCase
      */
     public function test_owner_can_assign_agent_to_property(): void
     {
-        $prop = DB::select("SELECT id FROM properties WHERE ownerId = 4 AND ROWNUM = 1");
+        $prop = DB::select("SELECT id FROM properties WHERE ownerId = 5 AND ROWNUM = 1");
         $this->assertNotEmpty($prop);
         $propId = $prop[0]->id;
 
         $response = $this->withSession([
-            'owner_user_id' => 4,
-            'owner_user_name' => 'Rahim Ahmed'
+            'owner_user_id' => 5,
+            'owner_user_name' => 'Karim Uddin'
         ])->post("/owner/properties/{$propId}/assign-agent", [
             'agent_id' => 1
         ]);
