@@ -11,7 +11,11 @@
             <h3 class="text-lg font-bold text-slate-100">Marketplace Inventory</h3>
             <p class="text-xs text-slate-400 mt-1">Review active property listings, pricing models, and ownership.</p>
         </div>
-        <form action="{{ route('admin.properties') }}" method="GET" class="w-full md:w-auto flex gap-2">
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+            <a href="{{ route('admin.properties.create') }}" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold text-white transition duration-200 shrink-0 flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/10">
+                <i class="fa-solid fa-plus text-xs"></i> List New Property
+            </a>
+            <form action="{{ route('admin.properties') }}" method="GET" class="w-full md:w-auto flex gap-2">
             <div class="relative w-full md:w-80">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
@@ -28,6 +32,7 @@
                 </a>
             @endif
         </form>
+        </div>
     </div>
 
     <!-- Properties Inventory Table -->
@@ -86,6 +91,9 @@
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('admin.properties.edit', $prop->id) }}" class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-blue-400 hover:text-blue-300 font-bold transition duration-200">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                    </a>
                                     <form action="{{ route('admin.properties.delete', $prop->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete listing #{{ $prop->id }}? This will fire PL/SQL cascade constraints and write to the audit trail.')">
                                         @csrf
                                         @method('DELETE')

@@ -56,10 +56,10 @@ class AdminSeeder extends Seeder
         DB::insert("INSERT INTO property_types (id, typeName, typeDescription) VALUES (3, 'Commercial', 'Offices, shops, or warehouses')");
 
         // 6. Seed Locations
-        DB::insert("INSERT INTO locations (id, areaName, city, country) VALUES (1, 'KUET Campus Area', 'Khulna', 'Bangladesh')");
-        DB::insert("INSERT INTO locations (id, areaName, city, country) VALUES (2, 'KDA Avenue', 'Khulna', 'Bangladesh')");
-        DB::insert("INSERT INTO locations (id, areaName, city, country) VALUES (3, 'Sonadanga', 'Khulna', 'Bangladesh')");
-        DB::insert("INSERT INTO locations (id, areaName, city, country) VALUES (4, 'Boyra', 'Khulna', 'Bangladesh')");
+        DB::insert("INSERT INTO locations (id, areaName, city, country, latitude, longitude) VALUES (1, 'KUET Campus Area', 'Khulna', 'Bangladesh', 22.9006, 89.5024)");
+        DB::insert("INSERT INTO locations (id, areaName, city, country, latitude, longitude) VALUES (2, 'KDA Avenue', 'Khulna', 'Bangladesh', 22.8222, 89.5535)");
+        DB::insert("INSERT INTO locations (id, areaName, city, country, latitude, longitude) VALUES (3, 'Sonadanga', 'Khulna', 'Bangladesh', 22.8124, 89.5350)");
+        DB::insert("INSERT INTO locations (id, areaName, city, country, latitude, longitude) VALUES (4, 'Boyra', 'Khulna', 'Bangladesh', 22.8392, 89.5398)");
 
         // 7. Seed Properties
         DB::insert("INSERT INTO properties (id, ownerId, agentId, typeId, locationId, title, propDescription, price, areaSize, bedrooms, bathrooms, furnishedStatus, parking, balcony, lift, status) VALUES (1, 5, 1, 1, 1, 'Luxury 3BHK Apartment near KUET', 'Beautiful and spacious 3BHK flat located inside the serene campus region of KUET. Highly suitable for families, students, or lecturers.', 12000000, 1600, 3, 3, 'furnished', 1, 2, 1, 'available')");

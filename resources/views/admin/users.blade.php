@@ -80,6 +80,9 @@
                                     <span class="text-xs text-slate-600 italic">Self (Protected)</span>
                                 @else
                                     <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ route('admin.users.edit', $user->id) }}" class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-blue-400 hover:text-blue-300 font-bold transition duration-200">
+                                            <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                        </a>
                                         @if($user->status === 'active')
                                             <!-- Suspend Trigger Form -->
                                             <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST" onsubmit="return confirmSuspend(event, '{{ $user->fullname }}')">

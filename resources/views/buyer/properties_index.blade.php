@@ -447,10 +447,30 @@
             maxZoom: 19
         }).addTo(leafletMap);
         
-        // Add markers
+        // Add markers with coordinate jittering for overlapping properties
+        const coordinatesCount = {};
+        
         properties.forEach(prop => {
             if (prop.latitude && prop.longitude) {
-                const marker = L.marker([parseFloat(prop.latitude), parseFloat(prop.longitude)]).addTo(leafletMap);
+                let lat = parseFloat(prop.latitude);
+                let lng = parseFloat(prop.longitude);
+                
+                // Key based on latitude and longitude (rounded to 5 decimals to detect close/same points)
+                const coordKey = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+                
+                if (coordinatesCount[coordKey]) {
+                    const count = coordinatesCount[coordKey];
+                    // Distribute overlapping markers in a small spiral circle
+                    const angle = count * (2 * Math.PI / 8); 
+                    const radius = 0.00025 * (1 + Math.floor(count / 8) * 0.4); 
+                    lat += Math.sin(angle) * radius;
+                    lng += Math.cos(angle) * radius;
+                    coordinatesCount[coordKey]++;
+                } else {
+                    coordinatesCount[coordKey] = 1;
+                }
+
+                const marker = L.marker([lat, lng]).addTo(leafletMap);
                 
                 const mainImg = prop.main_image ? (prop.main_image.startsWith('/') ? prop.main_image : '/' + prop.main_image) : 'https://placehold.co/600x400/0f172a/e2e8f0?text=Property';
                 const detailsUrl = `/buyer/properties/${prop.id}`;

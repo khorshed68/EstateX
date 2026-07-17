@@ -65,7 +65,7 @@
                 <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-blue-500 bg-clip-text text-transparent glowing-hero">Marketplace & Analytics Platform</span>
             </h1>
             <p class="text-slate-400 text-sm md:text-base leading-relaxed">
-                Choose your portal below to sign in or create an account. All platforms leverage raw SQL queries communicating with Oracle.
+                Choose your portal below to sign in or create an account.
             </p>
         </div>
 

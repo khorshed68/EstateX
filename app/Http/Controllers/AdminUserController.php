@@ -284,4 +284,114 @@ class AdminUserController extends Controller
             return back()->with('error', 'Failed to create user account: ' . $e->getMessage())->withInput();
         }
     }
+
+    /**
+     * Show form to edit an existing user.
+     */
+    public function edit($id)
+    {
+        $users = DB::select("SELECT * FROM users WHERE id = :id", ['id' => $id]);
+        if (empty($users)) {
+            abort(404, 'User not found.');
+        }
+        $user = $users[0];
+        
+        $roles = DB::select("SELECT * FROM roles ORDER BY id ASC");
+        
+        return view('admin.users_edit', compact('user', 'roles'));
+    }
+
+    /**
+     * Update an existing user's details.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'role_id' => 'required|integer|in:1,2,3,4',
+            'status' => 'required|string|in:active,suspended',
+            'password' => 'nullable|string|min:6',
+        ]);
+
+        $adminId = session('admin_user_id');
+
+        $oldUser = DB::select("SELECT * FROM users WHERE id = :id", ['id' => $id]);
+        if (empty($oldUser)) {
+            abort(404, 'User not found.');
+        }
+
+        // Check if email already registered to someone else
+        $email = $request->input('email');
+        $existing = DB::select("SELECT id FROM users WHERE email = :email AND id != :id", ['email' => $email, 'id' => $id]);
+        if (!empty($existing)) {
+            return back()->withErrors(['email' => 'This email address is already registered to another user.'])->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $passwordSql = "";
+            $bindings = [
+                'id' => $id,
+                'roleId' => $request->input('role_id'),
+                'fullname' => $request->input('fullname'),
+                'email' => $email,
+                'phone' => $request->input('phone'),
+                'status' => $request->input('status'),
+            ];
+
+            if ($request->filled('password')) {
+                $passwordSql = ", password = :password";
+                $bindings['password'] = Hash::make($request->input('password'));
+            }
+
+            DB::update("
+                UPDATE users SET 
+                    roleId = :roleId,
+                    fullname = :fullname,
+                    email = :email,
+                    phone = :phone,
+                    status = :status
+                    {$passwordSql}
+                WHERE id = :id
+            ", $bindings);
+
+            // If new role is Agent and no agent record exists, initialize agent record
+            if ($request->input('role_id') == 2) {
+                $agentCheck = DB::select("SELECT id FROM agents WHERE userId = :userId", ['userId' => $id]);
+                if (empty($agentCheck)) {
+                    $nextAgentIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM agents");
+                    $newAgentId = $nextAgentIdResult[0]->next_id;
+
+                    DB::insert("
+                        INSERT INTO agents (id, userId, agencyName, licenseNo, experienceYears, about, rating)
+                        VALUES (:id, :userId, 'Independent Agency', :licenseNo, 0, 'Platform agent account.', 5.00)
+                    ", [
+                        'id' => $newAgentId,
+                        'userId' => $id,
+                        'licenseNo' => 'LIC-' . rand(1000, 9999),
+                    ]);
+                }
+            }
+
+            // Log administrative action
+            DB::insert("
+                INSERT INTO admin_audit_logs (adminUserId, actionName, tableName, recordId, oldValues, newValues)
+                VALUES (:adminId, 'USER_UPDATE', 'USERS', :recordId, :oldValues, :newValues)
+            ", [
+                'adminId' => $adminId,
+                'recordId' => $id,
+                'oldValues' => 'Name: ' . $oldUser[0]->fullname . ', Email: ' . $oldUser[0]->email . ', Role: ' . $oldUser[0]->roleid . ', Status: ' . $oldUser[0]->status,
+                'newValues' => 'Name: ' . $request->input('fullname') . ', Email: ' . $email . ', Role: ' . $request->input('role_id') . ', Status: ' . $request->input('status')
+            ]);
+
+            DB::commit();
+            return redirect()->route('admin.users')->with('success', 'User details updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update user account: ' . $e->getMessage())->withInput();
+        }
+    }
 }
