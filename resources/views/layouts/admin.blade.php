@@ -117,13 +117,6 @@
         <header class="h-20 bg-slate-900/60 border-b border-slate-800 flex items-center justify-between px-6 md:px-8">
             <h2 class="font-outfit font-bold text-lg md:text-xl text-slate-200">@yield('page_title', 'Dashboard')</h2>
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <span class="text-xs text-slate-500 block">Database Status</span>
-                    <span class="text-xs font-bold text-green-500 flex items-center gap-1.5 justify-end">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        Oracle Connected
-                    </span>
-                </div>
             </div>
         </header>
 

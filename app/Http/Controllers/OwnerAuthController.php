@@ -52,6 +52,9 @@ class OwnerAuthController extends Controller
         $user = $users[0];
 
         // Verify status and password
+        if ($user->status === 'pending') {
+            return back()->withErrors(['email' => 'Your account is pending administrator approval. Please wait until approved.']);
+        }
         if ($user->status !== 'active') {
             return back()->withErrors(['email' => 'This account has been suspended or deactivated.']);
         }
@@ -117,10 +120,10 @@ class OwnerAuthController extends Controller
             $nextIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
             $nextId = $nextIdResult[0]->next_id;
 
-            // Insert new owner user (roleId = 4, status = active) using raw SQL
+            // Insert new owner user (roleId = 4, status = pending) using raw SQL
             DB::insert("
                 INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status) 
-                VALUES (:id, 4, :fullname, :email, :password, :phone, :profileImage, 'active')
+                VALUES (:id, 4, :fullname, :email, :password, :phone, :profileImage, 'pending')
             ", [
                 'id' => $nextId,
                 'fullname' => $request->input('fullname'),
@@ -130,7 +133,7 @@ class OwnerAuthController extends Controller
                 'profileImage' => $profileImagePath
             ]);
 
-            return redirect()->route('owner.login')->with('success', 'Your owner account has been created successfully! Please sign in.');
+            return redirect()->route('owner.login')->with('success', 'Your owner account has been created successfully and is pending administrator approval.');
         } catch (\Exception $e) {
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
         }

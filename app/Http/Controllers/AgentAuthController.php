@@ -62,6 +62,9 @@ class AgentAuthController extends Controller
         $user = $users[0];
 
         // Verify status and password
+        if ($user->status === 'pending') {
+            return back()->withErrors(['email' => 'Your account is pending administrator approval. Please wait until approved.']);
+        }
         if ($user->status !== 'active') {
             return back()->withErrors(['email' => 'This agent account has been suspended or deactivated.']);
         }
@@ -134,10 +137,10 @@ class AgentAuthController extends Controller
             $nextIdResult = DB::select("SELECT NVL(MAX(id), 0) + 1 AS next_id FROM users");
             $nextUserId = $nextIdResult[0]->next_id;
 
-            // Insert new user (roleId = 2 for agent, status = active) using raw SQL
+            // Insert new user (roleId = 2 for agent, status = pending) using raw SQL
             DB::insert("
                 INSERT INTO users (id, roleId, fullname, email, password, phone, profileImage, status) 
-                VALUES (:id, 2, :fullname, :email, :password, :phone, :profileImage, 'active')
+                VALUES (:id, 2, :fullname, :email, :password, :phone, :profileImage, 'pending')
             ", [
                 'id' => $nextUserId,
                 'fullname' => $request->input('fullname'),
@@ -166,7 +169,7 @@ class AgentAuthController extends Controller
 
             DB::commit();
 
-            return redirect()->route('agent.login')->with('success', 'Your agent account has been created successfully! Please sign in.');
+            return redirect()->route('agent.login')->with('success', 'Your agent account has been created successfully and is pending administrator approval.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();

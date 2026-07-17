@@ -106,15 +106,7 @@
                 </button>
             </form>
 
-            <!-- Test Credentials Quick-Fill -->
-            <div class="mt-6 pt-6 border-t border-slate-900">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2.5">Demo Agent Account</span>
-                <button onclick="document.getElementById('email').value='sadi@estatex.com'; document.getElementById('password').value='agent123';"
-                        class="w-full py-2 bg-slate-900 hover:bg-slate-800 border border-slate-900 hover:border-slate-800 text-slate-300 hover:text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition duration-200">
-                    <i class="fa-solid fa-circle-play text-purple-400"></i>
-                    Quick-Fill: Sheikh Sadi (Agent)
-                </button>
-            </div>
+
 
             <!-- Footer links -->
             <div class="mt-6 text-center">

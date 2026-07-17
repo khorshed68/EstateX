@@ -128,13 +128,6 @@
         <header class="h-20 bg-slate-950/60 border-b border-slate-900 flex items-center justify-between px-6 md:px-8 shrink-0">
             <h2 class="font-outfit font-bold text-lg md:text-xl text-slate-200">@yield('page_title', 'Agent Workspace')</h2>
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <span class="text-xs text-slate-500 block">Database Tunnel</span>
-                    <span class="text-xs font-bold text-purple-500 flex items-center gap-1.5 justify-end">
-                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                        Oracle Connected (PDO)
-                    </span>
-                </div>
             </div>
         </header>
 

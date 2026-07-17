@@ -70,8 +70,13 @@
                             </td>
                             <td class="p-4">
                                 <span class="flex items-center gap-1.5 font-semibold 
-                                    @if($user->status === 'active') text-green-400 @else text-red-400 @endif">
-                                    <span class="w-1.5 h-1.5 rounded-full @if($user->status === 'active') bg-green-400 @else bg-red-400 @endif"></span>
+                                    @if($user->status === 'active') text-green-400 
+                                    @elseif($user->status === 'pending') text-amber-400 
+                                    @else text-red-400 @endif">
+                                    <span class="w-1.5 h-1.5 rounded-full 
+                                        @if($user->status === 'active') bg-green-400 
+                                        @elseif($user->status === 'pending') bg-amber-400 
+                                        @else bg-red-400 @endif"></span>
                                     {{ ucfirst($user->status) }}
                                 </span>
                             </td>
@@ -97,7 +102,11 @@
                                             <form action="{{ route('admin.users.activate', $user->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 hover:border-green-500/40 rounded-lg text-green-400 hover:text-green-300 font-bold transition duration-200">
-                                                    <i class="fa-solid fa-user-check mr-1"></i> Reactivate
+                                                    @if($user->status === 'pending')
+                                                        <i class="fa-solid fa-user-check mr-1"></i> Approve
+                                                    @else
+                                                        <i class="fa-solid fa-user-check mr-1"></i> Reactivate
+                                                    @endif
                                                 </button>
                                             </form>
                                         @endif
