@@ -191,6 +191,7 @@ CREATE TABLE reviews (
     comments VARCHAR2(1000),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_reviews UNIQUE (userId, propertyId),
     CONSTRAINT fk_reviews_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_reviews_property FOREIGN KEY (propertyId) REFERENCES properties(id) ON DELETE CASCADE
 );
@@ -203,6 +204,7 @@ CREATE TABLE agent_reviews (
     comments VARCHAR2(1000),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_agent_reviews UNIQUE (userId, agentId),
     CONSTRAINT fk_agent_reviews_user FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_agent_reviews_agent FOREIGN KEY (agentId) REFERENCES agents(id) ON DELETE CASCADE
 );

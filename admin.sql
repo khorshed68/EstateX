@@ -14,8 +14,8 @@ CREATE TABLE admin_audit_logs (
     actionName    VARCHAR2(100) NOT NULL,
     tableName     VARCHAR2(50) NOT NULL,
     recordId      NUMBER NOT NULL,
-    oldValues     VARCHAR2(1000),
-    newValues     VARCHAR2(1000),
+    oldValues     CLOB,
+    newValues     CLOB,
     performedAt   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_audit_admin FOREIGN KEY (adminUserId) REFERENCES users(id) ON DELETE CASCADE
 );
