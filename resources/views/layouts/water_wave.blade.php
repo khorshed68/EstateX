@@ -1,28 +1,35 @@
 <style>
-    /* Global cursor hybrid lighting + water wave style */
+    /* Premium Refractive Water Wave Ripple Style */
     .global-water-ripple {
         position: fixed; /* Fixed relative to viewport for perfect scroll resilience */
         border-radius: 50%;
-        border: 1.5px solid rgba(52, 211, 153, 0.7); /* Highly visible water wave ripple outline */
-        background: radial-gradient(circle, rgba(52, 211, 153, 0.4) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 85%);
-        box-shadow: 0 0 10px rgba(52, 211, 153, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.35); /* Liquid light teal crest outline */
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(59, 130, 246, 0.02) 60%, transparent 80%);
+        box-shadow: 
+            inset 0 0 10px rgba(56, 189, 248, 0.15), 
+            0 0 15px rgba(59, 130, 246, 0.08);
+        
+        /* Backdrop refraction: warps & magnifies content beneath the wave */
+        backdrop-filter: blur(1px) saturate(110%);
+        -webkit-backdrop-filter: blur(1px) saturate(110%);
+        
         pointer-events: none;
-        width: 28px;
-        height: 28px;
-        transform: translate(-50%, -50%) scale(0.5);
+        width: 32px;
+        height: 32px;
+        transform: translate(-50%, -50%) scale(0.3);
         z-index: 999999; /* Draw on top of all UI components */
-        animation: lightWaveAnimation 0.55s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        animation: premiumWaveAnimation 0.65s cubic-bezier(0.1, 0.8, 0.15, 1) forwards;
     }
-    @keyframes lightWaveAnimation {
+    
+    @keyframes premiumWaveAnimation {
         0% {
-            transform: translate(-50%, -50%) scale(0.5);
-            opacity: 1;
-            filter: blur(0px);
+            transform: translate(-50%, -50%) scale(0.3);
+            opacity: 0.9;
         }
         100% {
-            transform: translate(-50%, -50%) scale(2.5);
+            transform: translate(-50%, -50%) scale(3.5);
             opacity: 0;
-            filter: blur(1.5px); /* Soft glow fade-out */
+            border-color: rgba(56, 189, 248, 0); /* Soft border fadeout */
         }
     }
 </style>
@@ -31,7 +38,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         let lastX = 0;
         let lastY = 0;
-        const minDistance = 12; // Throttling threshold for a smooth flowing trail
+        const minDistance = 15; // Smooth flowing trail distance threshold
 
         document.addEventListener('mousemove', function(e) {
             const clientX = e.clientX;
@@ -45,9 +52,10 @@
                 ripple.style.top = `${clientY}px`;
                 document.body.appendChild(ripple);
                 
+                // Remove element after animation completes
                 setTimeout(() => {
                     ripple.remove();
-                }, 500);
+                }, 650);
                 
                 lastX = clientX;
                 lastY = clientY;

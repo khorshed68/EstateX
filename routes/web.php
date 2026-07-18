@@ -32,6 +32,9 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     // Agent Management
     Route::get('/agents', [AdminUserController::class, 'agentsIndex'])->name('admin.agents');
     Route::post('/agents/{id}/update', [AdminUserController::class, 'agentUpdate'])->name('admin.agents.update');
+
+    // Owner Management
+    Route::get('/owners', [AdminUserController::class, 'ownersIndex'])->name('admin.owners');
     
     // Property Listings
     Route::get('/properties', [AdminPropertyController::class, 'index'])->name('admin.properties');

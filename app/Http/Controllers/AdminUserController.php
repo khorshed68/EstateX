@@ -21,7 +21,7 @@ class AdminUserController extends Controller
                 SELECT u.*, r.roleName 
                 FROM users u
                 JOIN roles r ON u.roleId = r.id
-                WHERE (LOWER(u.fullname) LIKE :search OR LOWER(u.email) LIKE :search)
+                WHERE u.roleId = 3 AND (LOWER(u.fullname) LIKE :search OR LOWER(u.email) LIKE :search)
                 ORDER BY u.id ASC
             ", ['search' => '%' . strtolower($search) . '%']);
         } else {
@@ -29,6 +29,7 @@ class AdminUserController extends Controller
                 SELECT u.*, r.roleName 
                 FROM users u
                 JOIN roles r ON u.roleId = r.id
+                WHERE u.roleId = 3
                 ORDER BY u.id ASC
             ");
         }
@@ -393,5 +394,34 @@ class AdminUserController extends Controller
             DB::rollBack();
             return back()->with('error', 'Failed to update user account: ' . $e->getMessage())->withInput();
         }
+    }
+
+    /**
+     * Display a listing of owners for moderation.
+     */
+    public function ownersIndex(Request $request)
+    {
+        $search = $request->input('search');
+
+        if ($search) {
+            $owners = DB::select("
+                SELECT u.*, 
+                       (SELECT COUNT(*) FROM properties WHERE ownerId = u.id) AS listings_count
+                FROM users u
+                WHERE u.roleId = 4 
+                  AND (LOWER(u.fullname) LIKE :search OR LOWER(u.email) LIKE :search)
+                ORDER BY u.id ASC
+            ", ['search' => '%' . strtolower($search) . '%']);
+        } else {
+            $owners = DB::select("
+                SELECT u.*, 
+                       (SELECT COUNT(*) FROM properties WHERE ownerId = u.id) AS listings_count
+                FROM users u
+                WHERE u.roleId = 4
+                ORDER BY u.id ASC
+            ");
+        }
+
+        return view('admin.owners', compact('owners', 'search'));
     }
 }

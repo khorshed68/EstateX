@@ -92,8 +92,8 @@ class AdminTest extends TestCase
         ])->get('/admin/users');
 
         $response->assertStatus(200);
-        $response->assertSee('User Directory');
-        $response->assertSee('admin@estatex.com');
+        $response->assertSee('Buyer Accounts');
+        $response->assertSee('rahim@estatex.com');
     }
 
     /**
@@ -323,5 +323,20 @@ class AdminTest extends TestCase
             'status' => $originalStatus,
             'id' => $propertyId
         ]);
+    }
+
+    /**
+     * Test admin can access owner management page.
+     */
+    public function test_authenticated_admin_can_access_owners_page(): void
+    {
+        $response = $this->withSession([
+            'admin_user_id' => 1,
+            'admin_user_name' => 'System Admin'
+        ])->get('/admin/owners');
+
+        $response->assertStatus(200);
+        $response->assertSee('Owner Accounts');
+        $response->assertSee('Karim Uddin');
     }
 }

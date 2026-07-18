@@ -8,12 +8,12 @@
     <!-- Search & Filter Card -->
     <div class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-            <h3 class="text-lg font-bold text-slate-100">User Directory</h3>
-            <p class="text-xs text-slate-400 mt-1">Manage system access roles, agents, and buyers.</p>
+            <h3 class="text-lg font-bold text-slate-100">Buyer Accounts</h3>
+            <p class="text-xs text-slate-400 mt-1">Manage standard platform buyer and client accounts.</p>
         </div>
         <div class="w-full md:w-auto flex flex-col md:flex-row gap-3">
             <button onclick="openAddUserModal()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-bold text-white transition duration-200 shrink-0 flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/10">
-                <i class="fa-solid fa-plus text-xs"></i> Add New User
+                <i class="fa-solid fa-plus text-xs"></i> Add New Buyer
             </button>
             <form action="{{ route('admin.users') }}" method="GET" class="w-full md:w-auto flex gap-2">
                 <div class="relative w-full md:w-64">
@@ -139,8 +139,8 @@
     <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 overflow-hidden relative shadow-2xl">
         <div class="mb-5 flex justify-between items-center">
             <div>
-                <h3 class="font-outfit font-bold text-lg text-slate-100">Add New User</h3>
-                <p class="text-xs text-slate-500 mt-1">Create a new authenticated account directly.</p>
+                <h3 class="font-outfit font-bold text-lg text-slate-100">Add New Buyer</h3>
+                <p class="text-xs text-slate-500 mt-1">Create a new buyer account directly.</p>
             </div>
             <button onclick="closeAddUserModal()" class="w-8 h-8 rounded-full bg-slate-950 border border-slate-800 hover:border-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition duration-200">
                 <i class="fa-solid fa-xmark text-sm"></i>
@@ -149,6 +149,9 @@
 
         <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4">
             @csrf
+
+            <!-- Preset role_id = 3 for Buyer -->
+            <input type="hidden" name="role_id" value="3">
 
             <!-- Full Name -->
             <div>
@@ -178,22 +181,10 @@
                        class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition duration-200">
             </div>
 
-            <!-- Role Selection -->
-            <div>
-                <label for="modal_role" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Account Role</label>
-                 <select id="modal_role" name="role_id" required 
-                         class="w-full bg-slate-950 border border-slate-850 rounded-xl py-2.5 px-4 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition duration-200">
-                     <option value="3">Buyer</option>
-                     <option value="4">Property Owner</option>
-                     <option value="2">Real Estate Agent</option>
-                     <option value="1">Administrator</option>
-                 </select>
-            </div>
-
             <!-- Submit -->
             <div class="pt-2">
                 <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold tracking-wide rounded-xl shadow-lg shadow-blue-500/20 transition duration-200">
-                    Create User Account
+                    Create Buyer Account
                 </button>
             </div>
         </form>

@@ -73,10 +73,51 @@
                                 </div>
                             </td>
                             <td class="p-4 text-center">
-                                <button onclick="openEditModal({{ json_encode($agent) }})" 
-                                        class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-blue-400 hover:text-blue-300 font-bold transition duration-200">
-                                    <i class="fa-solid fa-user-pen mr-1"></i> Moderate Profile
-                                </button>
+                                <div class="flex items-center justify-center gap-2">
+                                    <!-- Moderate Profile (Agent Specific) -->
+                                    <button onclick="openEditModal({{ json_encode($agent) }})" 
+                                            class="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 rounded-lg text-purple-400 hover:text-purple-300 font-bold transition duration-200"
+                                            title="Moderate Credentials">
+                                        <i class="fa-solid fa-user-pen mr-1"></i> Moderate
+                                    </button>
+
+                                    <!-- Edit User Details -->
+                                    <a href="{{ route('admin.users.edit', $agent->userid) }}" 
+                                       class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-blue-400 hover:text-blue-300 font-bold transition duration-200">
+                                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                    </a>
+                                    
+                                    <!-- Suspend / Reactivate User -->
+                                    @if($agent->status === 'active')
+                                        <form action="{{ route('admin.users.suspend', $agent->userid) }}" method="POST" onsubmit="return confirmSuspend(event, '{{ $agent->fullname }}')">
+                                            @csrf
+                                            <input type="hidden" name="reason" id="reason_{{ $agent->userid }}" value="Administrative suspension">
+                                            <button type="submit" class="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg text-red-400 hover:text-red-300 font-bold transition duration-200">
+                                                <i class="fa-solid fa-user-slash mr-1"></i> Suspend
+                                            </button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('admin.users.activate', $agent->userid) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 hover:border-green-500/40 rounded-lg text-green-400 hover:text-green-300 font-bold transition duration-200">
+                                                @if($agent->status === 'pending')
+                                                    <i class="fa-solid fa-user-check mr-1"></i> Approve
+                                                @else
+                                                    <i class="fa-solid fa-user-check mr-1"></i> Reactivate
+                                                @endif
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    <!-- Delete User -->
+                                    <form action="{{ route('admin.users.delete', $agent->userid) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete agent {{ $agent->fullname }}? All listings, wishlist items, bookings, and profile details will be removed.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1.5 bg-red-600/10 hover:bg-red-600/20 border border-red-600/20 hover:border-red-600/40 rounded-lg text-red-400 hover:text-red-300 font-bold transition duration-200">
+                                            <i class="fa-solid fa-trash-can mr-1"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -165,6 +206,16 @@
 
     function closeEditModal() {
         document.getElementById('editModal').classList.add('hidden');
+    }
+
+    function confirmSuspend(event, userName) {
+        event.preventDefault();
+        const reason = prompt(`Provide a suspension audit reason for agent "${userName}":`, "Administrative suspension");
+        if (reason === null) return false; // Cancelled
+        
+        const form = event.target;
+        form.querySelector('input[name="reason"]').value = reason || "Suspended by Administrator";
+        form.submit();
     }
 </script>
 @endsection

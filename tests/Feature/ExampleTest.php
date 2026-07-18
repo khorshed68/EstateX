@@ -16,6 +16,6 @@ class ExampleTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('EstateX');
-        $response->assertSee('Buyer Marketplace');
+        $response->assertSee('Buyer Portal');
     }
 }

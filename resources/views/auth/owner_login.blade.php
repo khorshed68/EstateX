@@ -77,7 +77,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fa-solid fa-envelope text-xs"></i>
                         </span>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="owner@estatex.com" 
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="owner@estatex.com" autocomplete="off"
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition duration-200">
                     </div>
                     @error('email')
@@ -92,7 +92,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fa-solid fa-lock text-xs"></i>
                         </span>
-                        <input type="password" id="password" name="password" required placeholder="••••••••" 
+                        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="new-password" 
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition duration-200">
                     </div>
                     @error('password')
@@ -113,20 +113,7 @@
             </div>
         </div>
 
-        <!-- Seeding Info / Helper for Testing -->
-        <div class="mt-6 bg-slate-900/40 border border-slate-850/50 rounded-2xl p-4 text-center">
-            <span class="block text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-2">Test Owner Credentials</span>
-            <div class="flex justify-center items-center gap-4 text-xs">
-                <div>
-                    <span class="text-slate-500">Email:</span>
-                    <span class="text-slate-300 font-mono">rahim@estatex.com</span>
-                </div>
-                <div>
-                    <span class="text-slate-500">Pass:</span>
-                    <span class="text-slate-300 font-mono">user123</span>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     @include('layouts.water_wave')

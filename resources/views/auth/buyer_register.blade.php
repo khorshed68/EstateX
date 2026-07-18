@@ -85,7 +85,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fa-solid fa-envelope text-xs"></i>
                         </span>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="john@example.com" 
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required placeholder="john@example.com" autocomplete="off"
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200">
                     </div>
                     @error('email')
@@ -130,7 +130,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fa-solid fa-lock text-xs"></i>
                         </span>
-                        <input type="password" id="password" name="password" required placeholder="Min 6 characters" 
+                        <input type="password" id="password" name="password" required placeholder="Min 6 characters" autocomplete="new-password"
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200">
                     </div>
                     @error('password')
@@ -145,7 +145,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fa-solid fa-check-double text-xs"></i>
                         </span>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Repeat password" 
+                        <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Repeat password" autocomplete="new-password"
                                class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition duration-200">
                     </div>
                 </div>
